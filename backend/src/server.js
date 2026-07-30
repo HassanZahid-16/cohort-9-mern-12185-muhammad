@@ -23,11 +23,17 @@ if (process.env.PORT !== undefined) {
 }
 
 const startServer = async () => {
-  await connectDatabase();
+  try {
+    await connectDatabase();
 
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server startup failed.");
+
+    process.exit(1);
+  }
 };
 
 startServer();
