@@ -7,16 +7,21 @@ const authenticate = (req, res, next) => {
       message: "Authentication token is required.",
     });
   }
-  const [scheme, token] = authorizationHeader.split(" ");
-  if (scheme !== "Bearer" || !token) {
+  const parts = authorizationHeader.trim().split(/\s+/);
+  if (
+    parts.length !== 2 ||
+    parts[0] !== "Bearer" ||
+    !parts[1]
+  ) {
     return res.status(401).json({
       message: "Invalid authentication token.",
     });
   }
+  const token = parts[1];
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    request.user = {
+    req.user = {
       id: payload.userId,
     };
     next();
