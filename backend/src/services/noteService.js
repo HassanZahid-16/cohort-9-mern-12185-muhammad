@@ -85,7 +85,7 @@ const getNoteById = async ({ noteId, owner }) => {
   }
 };
 
-const updateNote = async ({noteId, owner, title,content,}) => {
+const updateNote = async ({ noteId, owner, title, content, }) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(noteId)) {
       throw new AppError(
@@ -114,11 +114,17 @@ const updateNote = async ({noteId, owner, title,content,}) => {
       updatedAt: note.updatedAt,
     };
   } catch (error) {
+    if (error.name === "VersionError") {
+      throw new AppError(
+        "The note was modified by another request.",
+        409
+      );
+    }
     throw error;
   }
 };
 
-const deleteNote = async ({noteId, owner,}) => {
+const deleteNote = async ({ noteId, owner, }) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(noteId)) {
       throw new AppError(
