@@ -14,7 +14,7 @@ const validateNote = ({ title, content }) => {
   ) {
     return "Content is required.";
   }
-  if (content.length > 10000) {
+  if (content.trim().length > 10000) {
     return "Content cannot exceed 10000 characters.";
   }
   return null;

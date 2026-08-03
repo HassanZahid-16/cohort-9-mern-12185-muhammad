@@ -1,106 +1,148 @@
+const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
 const Note = require("../models/Note");
 
 const createNote = async ({ title, content, owner }) => {
-  const note = await Note.create({
-    title,
-    content,
-    owner,
-  });
-  return {
-    id: note._id,
-    title: note.title,
-    content: note.content,
-    owner: note.owner,
-    createdAt: note.createdAt,
-    updatedAt: note.updatedAt,
-  };
+  try {
+    const note = await Note.create({
+      title,
+      content,
+      owner,
+    });
+    return {
+      id: note._id,
+      title: note.title,
+      content: note.content,
+      owner: note.owner,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    };
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      throw new AppError(
+        "Unable to create note.",
+        400
+      );
+    }
+    throw error;
+  }
 };
 
 const getUserNotes = async (owner) => {
-  const notes = await Note.find({
-    owner,
-  })
-    .sort({
-      updatedAt: -1,
+  try {
+    const notes = await Note.find({
+      owner,
     })
-    .lean();
-  return notes.map((note) => ({
-    id: note._id,
-    title: note.title,
-    content: note.content,
-    createdAt: note.createdAt,
-    updatedAt: note.updatedAt,
-  }));
+      .sort({
+        updatedAt: -1,
+      })
+      .lean();
+    return notes.map((note) => ({
+      id: note._id,
+      title: note.title,
+      content: note.content,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    }));
+  } catch (error) {
+    if (error.name === "CastError") {
+      throw new AppError(
+        "Invalid user information.",
+        400
+      );
+    }
+    throw error;
+  }
 };
 
 const getNoteById = async ({ noteId, owner }) => {
-  const note = await Note.findOne({
-    _id: noteId,
-    owner,
-  }).lean();
-  if (!note) {
-    throw new AppError(
-      "Note not found.",
-      404
-    );
+  try {
+    if (!mongoose.Types.ObjectId.isValid(noteId)) {
+      throw new AppError(
+        "Invalid note id.",
+        400
+      );
+    }
+    const note = await Note.findOne({
+      _id: noteId,
+      owner,
+    }).lean();
+    if (!note) {
+      throw new AppError(
+        "Note not found.",
+        404
+      );
+    }
+    return {
+      id: note._id,
+      title: note.title,
+      content: note.content,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    };
+  } catch (error) {
+    throw error;
   }
-  return {
-    id: note._id,
-    title: note.title,
-    content: note.content,
-    createdAt: note.createdAt,
-    updatedAt: note.updatedAt,
-  };
 };
 
-
-const updateNote = async ({
-  noteId,
-  owner,
-  title,
-  content,
-}) => {
-  const note = await Note.findOne({
-    _id: noteId,
-    owner,
-  });
-  if (!note) {
-    throw new AppError(
-      "Note not found.",
-      404
-    );
+const updateNote = async ({noteId, owner, title,content,}) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(noteId)) {
+      throw new AppError(
+        "Invalid note id.",
+        400
+      );
+    }
+    const note = await Note.findOne({
+      _id: noteId,
+      owner,
+    });
+    if (!note) {
+      throw new AppError(
+        "Note not found.",
+        404
+      );
+    }
+    note.title = title;
+    note.content = content;
+    await note.save();
+    return {
+      id: note._id,
+      title: note.title,
+      content: note.content,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    };
+  } catch (error) {
+    throw error;
   }
-  note.title = title;
-  note.content = content;
-  await note.save();
-  return {
-    id: note._id,
-    title: note.title,
-    content: note.content,
-    createdAt: note.createdAt,
-    updatedAt: note.updatedAt,
-  };
 };
 
-const deleteNote = async ({
-  noteId,
-  owner,
-}) => {
-  const note = await Note.findOne({
-    _id: noteId,
-    owner,
-  });
-  if (!note) {
-    throw new AppError(
-      "Note not found.",
-      404
-    );
+const deleteNote = async ({noteId, owner,}) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(noteId)) {
+      throw new AppError(
+        "Invalid note id.",
+        400
+      );
+    }
+    const note = await Note.findOne({
+      _id: noteId,
+      owner,
+    });
+    if (!note) {
+      throw new AppError(
+        "Note not found.",
+        404
+      );
+    }
+    await note.deleteOne();
+    return {
+      message: "Note deleted successfully.",
+    };
+  } catch (error) {
+    throw error;
   }
-  await note.deleteOne();
-  return {
-    message: "Note deleted successfully.",
-  };
 };
 
 module.exports = {createNote, getUserNotes, getNoteById, updateNote, deleteNote,};
