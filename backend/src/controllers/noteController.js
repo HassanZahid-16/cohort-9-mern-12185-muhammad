@@ -16,6 +16,13 @@ const create = async (req, res, next) => {
       content: req.body.content.trim(),
       owner: req.user.id,
     });
+    req.log.info(
+      {
+        noteId: note.id,
+        userId: req.user.id,
+      },
+      "Note created."
+    );
     return res.status(201).json({
       message: "Note created successfully.",
       note,
@@ -67,6 +74,13 @@ const update = async (req, res, next) => {
       title: req.body.title.trim(),
       content: req.body.content.trim(),
     });
+    req.log.info(
+      {
+        noteId: note.id,
+        userId: req.user.id,
+      },
+      "Note updated."
+    );
     return res.status(200).json({
       message: "Note updated successfully.",
       note,
@@ -82,6 +96,13 @@ const remove = async (req, res, next) => {
       noteId: req.params.id,
       owner: req.user.id,
     });
+    req.log.info(
+      {
+        noteId: req.params.id,
+        userId: req.user.id,
+      },
+      "Note deleted."
+    );
     return res.status(200).json(result);
   } catch (error) {
     next(error);

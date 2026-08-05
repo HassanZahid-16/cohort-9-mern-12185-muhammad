@@ -13,6 +13,12 @@ const register = async (req, res, next) => {
       });
     }
     const user = await authService.registerUser(req.body);
+    req.log.info(
+      {
+        userId: user.id,
+      },
+      "User registration completed."
+    );
     return res.status(201).json({
       message: "User registered successfully.",
       user,
@@ -31,6 +37,12 @@ const login = async (req, res, next) => {
       });
     }
     const result = await authService.loginUser(req.body);
+    req.log.info(
+      {
+        userId: result.user.id,
+      },
+      "User login completed."
+    );
     return res.status(200).json({
       message: "Login successful.",
       ...result,
