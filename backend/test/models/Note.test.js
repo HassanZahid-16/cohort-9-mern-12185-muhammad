@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const mongoose = require("mongoose");
+
 const Note = require("../../src/models/Note");
 
 describe("Note Model", () => {
@@ -9,8 +10,12 @@ describe("Note Model", () => {
       content: "This is a test note.",
       owner: new mongoose.Types.ObjectId(),
     });
-    const error = await note.validate().catch((error) => error);
-    expect(error).to.be.undefined;
+    try {
+      const error = await note.validate();
+      expect(error).to.be.undefined;
+    } catch (error) {
+      expect.fail(error);
+    }
   });
 
   it("should require title", async () => {
@@ -18,11 +23,16 @@ describe("Note Model", () => {
       content: "This is a test note.",
       owner: new mongoose.Types.ObjectId(),
     });
-    const error = await note.validate().catch((error) => error);
-    expect(error.errors.title).to.exist;
-    expect(error.errors.title.message).to.equal(
-      "Title is required."
-    );
+    try {
+      const error = await note.validate();
+      expect.fail("Expected validation to fail.");
+    } catch (error) {
+      expect(error.errors.title).to.exist;
+
+      expect(error.errors.title.message).to.equal(
+        "Title is required."
+      );
+    }
   });
 
   it("should reject a title longer than 120 characters", async () => {
@@ -31,8 +41,13 @@ describe("Note Model", () => {
       content: "This is a test note.",
       owner: new mongoose.Types.ObjectId(),
     });
-    const error = await note.validate().catch((error) => error);
-    expect(error.errors.title).to.exist;
+    try {
+      const error = await note.validate();
+
+      expect.fail("Expected validation to fail.");
+    } catch (error) {
+      expect(error.errors.title).to.exist;
+    }
   });
 
   it("should require content", async () => {
@@ -40,11 +55,15 @@ describe("Note Model", () => {
       title: "Test Note",
       owner: new mongoose.Types.ObjectId(),
     });
-    const error = await note.validate().catch((error) => error);
-    expect(error.errors.content).to.exist;
-    expect(error.errors.content.message).to.equal(
-      "Content is required."
-    );
+    try {
+      const error = await note.validate();
+      expect.fail("Expected validation to fail.");
+    } catch (error) {
+      expect(error.errors.content).to.exist;
+      expect(error.errors.content.message).to.equal(
+        "Content is required."
+      );
+    }
   });
 
   it("should reject content longer than 10000 characters", async () => {
@@ -53,8 +72,12 @@ describe("Note Model", () => {
       content: "A".repeat(10001),
       owner: new mongoose.Types.ObjectId(),
     });
-    const error = await note.validate().catch((error) => error);
-    expect(error.errors.content).to.exist;
+    try {
+      const error = await note.validate();
+      expect.fail("Expected validation to fail.");
+    } catch (error) {
+      expect(error.errors.content).to.exist;
+    }
   });
 
   it("should require owner", async () => {
@@ -62,8 +85,12 @@ describe("Note Model", () => {
       title: "Test Note",
       content: "This is a test note.",
     });
-    const error = await note.validate().catch((error) => error);
-    expect(error.errors.owner).to.exist;
+    try {
+      const error = await note.validate();
+      expect.fail("Expected validation to fail.");
+    } catch (error) {
+      expect(error.errors.owner).to.exist;
+    }
   });
 
   it("should require owner to be an ObjectId", async () => {
@@ -72,8 +99,12 @@ describe("Note Model", () => {
       content: "This is a test note.",
       owner: "invalid-owner-id",
     });
-    const error = await note.validate().catch((error) => error);
-    expect(error.errors.owner).to.exist;
+    try {
+      const error = await note.validate();
+      expect.fail("Expected validation to fail.");
+    } catch (error) {
+      expect(error.errors.owner).to.exist;
+    }
   });
 
   it("should trim title and content", () => {

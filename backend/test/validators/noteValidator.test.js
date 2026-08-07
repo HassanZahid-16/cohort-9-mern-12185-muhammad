@@ -50,10 +50,22 @@ describe("Note Validator", () => {
   });
 
   it("should trim whitespace before validation", () => {
-    const result = validateNote({
-      title: "   Shopping   ",
-      content: "   Buy milk   ",
-    });
-    expect(result).to.equal(null);
+  const validResult = validateNote({
+    title: "   Shopping   ",
+    content: "   Buy milk   ",
   });
+  expect(validResult).to.equal(null);
+  const whitespaceTitleResult = validateNote({
+    title: "      ",
+    content: "Sample content",
+  });
+  expect(whitespaceTitleResult).to.equal(
+    "Title is required."
+  );
+  const boundaryTitleResult = validateNote({
+    title: `${" ".repeat(5)}${"A".repeat(120)}${" ".repeat(5)}`,
+    content: "Sample content",
+  });
+  expect(boundaryTitleResult).to.equal(null);
+});
 });

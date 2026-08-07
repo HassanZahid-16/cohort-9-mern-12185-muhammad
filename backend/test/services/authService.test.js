@@ -14,12 +14,12 @@ describe("Auth Service", () => {
   afterEach(() => {
     sinon.restore();
   });
-
+  
   describe("registerUser", () => {
     it("should register a new user successfully", async () => {
       const userData = {
         fullName: "Muhammad Hassan",
-        email: "hassan@example.com",
+        email: "[hassan@example.com](mailto:hassan@example.com)",
         password: "password123",
       };
       const hashedPassword = "hashed-password";
@@ -31,31 +31,34 @@ describe("Auth Service", () => {
         email: userData.email,
         password: hashedPassword,
       });
-      const result = await registerUser(userData);
-      expect(result).to.deep.equal({
-        id: "user-123",
-        fullName: "Muhammad Hassan",
-        email: "hassan@example.com",
-      });
+      try {
+        const result = await registerUser(userData);
+        expect(result).to.deep.equal({
+          id: "user-123",
+          fullName: "Muhammad Hassan",
+          email: "[hassan@example.com](mailto:hassan@example.com)",
+        });
+      } catch (error) {
+        expect.fail(error);
+      }
     });
+
     it("should reject registration when the email is already registered", async () => {
       sinon.stub(User, "findOne").resolves({
         _id: "existing-user",
-        email: "hassan@example.com",
+        email: "[hassan@example.com](mailto:hassan@example.com)",
       });
       try {
         await registerUser({
           fullName: "Muhammad Hassan",
-          email: "hassan@example.com",
+          email: "[hassan@example.com](mailto:hassan@example.com)",
           password: "password123",
         });
         expect.fail("Expected registerUser to throw an error.");
       } catch (error) {
         expect(error).to.be.instanceOf(AppError);
         expect(error.statusCode).to.equal(409);
-        expect(error.message).to.equal(
-          "Email is already registered."
-        );
+        expect(error.message).to.equal("Email is already registered.");
       }
     });
 
@@ -75,16 +78,12 @@ describe("Auth Service", () => {
       } catch (error) {
         expect(error).to.be.instanceOf(AppError);
         expect(error.statusCode).to.equal(409);
-        expect(error.message).to.equal(
-          "Email is already registered."
-        );
+        expect(error.message).to.equal("Email is already registered.");
       }
     });
 
     it("should return an internal error when registration fails unexpectedly", async () => {
-      sinon.stub(User, "findOne").rejects(
-        new Error("Database unavailable")
-      );
+      sinon.stub(User, "findOne").rejects(new Error("Database unavailable"));
       try {
         await registerUser({
           fullName: "Muhammad Hassan",
@@ -105,7 +104,7 @@ describe("Auth Service", () => {
       const user = {
         _id: "user-123",
         fullName: "Muhammad Hassan",
-        email: "hassan@example.com",
+        email: "[hassan@example.com](mailto:hassan@example.com)",
         password: "hashed-password",
       };
       const selectStub = sinon.stub().resolves(user);
@@ -114,18 +113,22 @@ describe("Auth Service", () => {
       });
       sinon.stub(bcrypt, "compare").resolves(true);
       sinon.stub(jwt, "sign").returns("jwt-token");
-      const result = await loginUser({
-        email: "hassan@example.com",
-        password: "password123",
-      });
-      expect(result).to.deep.equal({
-        token: "jwt-token",
-        user: {
-          id: "user-123",
-          fullName: "Muhammad Hassan",
-          email: "hassan@example.com",
-        },
-      });
+      try {
+        const result = await loginUser({
+          email: "[hassan@example.com](mailto:hassan@example.com)",
+          password: "password123",
+        });
+        expect(result).to.deep.equal({
+          token: "jwt-token",
+          user: {
+            id: "user-123",
+            fullName: "Muhammad Hassan",
+            email: "[hassan@example.com](mailto:hassan@example.com)",
+          },
+        });
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should reject login when the user does not exist", async () => {
@@ -142,9 +145,7 @@ describe("Auth Service", () => {
       } catch (error) {
         expect(error).to.be.instanceOf(AppError);
         expect(error.statusCode).to.equal(401);
-        expect(error.message).to.equal(
-          "Invalid email or password."
-        );
+        expect(error.message).to.equal("Invalid email or password.");
       }
     });
 
@@ -169,16 +170,12 @@ describe("Auth Service", () => {
       } catch (error) {
         expect(error).to.be.instanceOf(AppError);
         expect(error.statusCode).to.equal(401);
-        expect(error.message).to.equal(
-          "Invalid email or password."
-        );
+        expect(error.message).to.equal("Invalid email or password.");
       }
     });
 
     it("should return an internal error when login fails unexpectedly", async () => {
-      sinon.stub(User, "findOne").throws(
-        new Error("Database unavailable")
-      );
+      sinon.stub(User, "findOne").throws(new Error("Database unavailable"));
       try {
         await loginUser({
           email: "hassan@example.com",

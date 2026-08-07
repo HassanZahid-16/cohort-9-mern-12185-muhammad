@@ -27,19 +27,23 @@ describe("Note Service", () => {
         updatedAt: new Date(),
       };
       sinon.stub(Note, "create").resolves(note);
-      const result = await createNote({
-        title: note.title,
-        content: note.content,
-        owner: note.owner,
-      });
-      expect(result).to.deep.equal({
-        id: note._id,
-        title: note.title,
-        content: note.content,
-        owner: note.owner,
-        createdAt: note.createdAt,
-        updatedAt: note.updatedAt,
-      });
+      try {
+        const result = await createNote({
+          title: note.title,
+          content: note.content,
+          owner: note.owner,
+        });
+        expect(result).to.deep.equal({
+          id: note._id,
+          title: note.title,
+          content: note.content,
+          owner: note.owner,
+          createdAt: note.createdAt,
+          updatedAt: note.updatedAt,
+        });
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should return an AppError when note validation fails", async () => {
@@ -88,11 +92,15 @@ describe("Note Service", () => {
       sinon.stub(Note, "find").returns({
         sort: sortStub,
       });
-      const result = await getUserNotes("user-123");
-      expect(result).to.have.lengthOf(2);
-      expect(result[0].id).to.equal("note-1");
-      expect(result[1].id).to.equal("note-2");
-      expect(sortStub.calledWith({ updatedAt: -1 })).to.equal(true);
+      try {
+        const result = await getUserNotes("user-123");
+        expect(result).to.have.lengthOf(2);
+        expect(result[0].id).to.equal("note-1");
+        expect(result[1].id).to.equal("note-2");
+        expect(sortStub.calledWith({ updatedAt: -1 })).to.equal(true);
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should convert a cast error into an AppError", async () => {
@@ -131,13 +139,17 @@ describe("Note Service", () => {
       sinon.stub(Note, "findOne").returns({
         lean: leanStub,
       });
-      const result = await getNoteById({
-        noteId: "507f1f77bcf86cd799439011",
-        owner: "507f1f77bcf86cd799439012",
-      });
-      expect(result.id).to.equal("note-123");
-      expect(result.title).to.equal("First Note");
-      expect(result.content).to.equal("Note content");
+      try {
+        const result = await getNoteById({
+          noteId: "507f1f77bcf86cd799439011",
+          owner: "507f1f77bcf86cd799439012",
+        });
+        expect(result.id).to.equal("note-123");
+        expect(result.title).to.equal("First Note");
+        expect(result.content).to.equal("Note content");
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should reject an invalid note id", async () => {
@@ -184,18 +196,22 @@ describe("Note Service", () => {
         save: sinon.stub().resolves(),
       };
       sinon.stub(Note, "findOne").resolves(note);
-      const result = await updateNote({
-        noteId: "507f1f77bcf86cd799439011",
-        owner: "507f1f77bcf86cd799439012",
-        title: "Updated title",
-        content: "Updated content",
-      });
-      expect(note.title).to.equal("Updated title");
-      expect(note.content).to.equal("Updated content");
-      expect(note.save.calledOnce).to.equal(true);
-      expect(result.id).to.equal("note-123");
-      expect(result.title).to.equal("Updated title");
-      expect(result.content).to.equal("Updated content");
+      try {
+        const result = await updateNote({
+          noteId: "507f1f77bcf86cd799439011",
+          owner: "507f1f77bcf86cd799439012",
+          title: "Updated title",
+          content: "Updated content",
+        });
+        expect(note.title).to.equal("Updated title");
+        expect(note.content).to.equal("Updated content");
+        expect(note.save.calledOnce).to.equal(true);
+        expect(result.id).to.equal("note-123");
+        expect(result.title).to.equal("Updated title");
+        expect(result.content).to.equal("Updated content");
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should return an error when the note to update does not exist", async () => {
@@ -250,14 +266,18 @@ describe("Note Service", () => {
         deleteOne: sinon.stub().resolves(),
       };
       sinon.stub(Note, "findOne").resolves(note);
-      const result = await deleteNote({
-        noteId: "507f1f77bcf86cd799439011",
-        owner: "507f1f77bcf86cd799439012",
-      });
-      expect(note.deleteOne.calledOnce).to.equal(true);
-      expect(result).to.deep.equal({
-        message: "Note deleted successfully.",
-      });
+      try {
+        const result = await deleteNote({
+          noteId: "507f1f77bcf86cd799439011",
+          owner: "507f1f77bcf86cd799439012",
+        });
+        expect(note.deleteOne.calledOnce).to.equal(true);
+        expect(result).to.deep.equal({
+          message: "Note deleted successfully.",
+        });
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should return an error when the note to delete does not exist", async () => {

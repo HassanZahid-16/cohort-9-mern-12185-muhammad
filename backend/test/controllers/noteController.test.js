@@ -46,22 +46,26 @@ describe("Note Controller", () => {
         owner: "user123",
       };
       sandbox.stub(noteService, "createNote").resolves(note);
-      await noteController.create(req, res, next);
-      expect(
-        noteService.createNote.calledOnceWith({
-          title: "Test Note",
-          content: "Note content",
-          owner: "user123",
-        })
-      ).to.equal(true);
-      expect(res.status.calledOnceWith(201)).to.equal(true);
-      expect(
-        res.json.calledOnceWith({
-          message: "Note created successfully.",
-          note,
-        })
-      ).to.equal(true);
-      expect(next.notCalled).to.equal(true);
+      try {
+        await noteController.create(req, res, next);
+        expect(
+          noteService.createNote.calledOnceWith({
+            title: "Test Note",
+            content: "Note content",
+            owner: "user123",
+          })
+        ).to.equal(true);
+        expect(res.status.calledOnceWith(201)).to.equal(true);
+        expect(
+          res.json.calledOnceWith({
+            message: "Note created successfully.",
+            note,
+          })
+        ).to.equal(true);
+        expect(next.notCalled).to.equal(true);
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should reject invalid note data", async () => {
@@ -106,13 +110,17 @@ describe("Note Controller", () => {
         },
       ];
       sandbox.stub(noteService, "getUserNotes").resolves(notes);
-      await noteController.getAll(req, res, next);
-      expect(noteService.getUserNotes.calledOnceWith("user123")).to.equal(
-        true
-      );
-      expect(res.status.calledOnceWith(200)).to.equal(true);
-      expect(res.json.calledOnceWith({ notes })).to.equal(true);
-      expect(next.notCalled).to.equal(true);
+      try {
+        await noteController.getAll(req, res, next);
+        expect(noteService.getUserNotes.calledOnceWith("user123")).to.equal(
+          true
+        );
+        expect(res.status.calledOnceWith(200)).to.equal(true);
+        expect(res.json.calledOnceWith({ notes })).to.equal(true);
+        expect(next.notCalled).to.equal(true);
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should pass service errors to the error handler", async () => {
@@ -132,16 +140,20 @@ describe("Note Controller", () => {
         content: "Note content",
       };
       sandbox.stub(noteService, "getNoteById").resolves(note);
-      await noteController.getById(req, res, next);
-      expect(
-        noteService.getNoteById.calledOnceWith({
-          noteId: "note123",
-          owner: "user123",
-        })
-      ).to.equal(true);
-      expect(res.status.calledOnceWith(200)).to.equal(true);
-      expect(res.json.calledOnceWith({ note })).to.equal(true);
-      expect(next.notCalled).to.equal(true);
+      try {
+        await noteController.getById(req, res, next);
+        expect(
+          noteService.getNoteById.calledOnceWith({
+            noteId: "note123",
+            owner: "user123",
+          })
+        ).to.equal(true);
+        expect(res.status.calledOnceWith(200)).to.equal(true);
+        expect(res.json.calledOnceWith({ note })).to.equal(true);
+        expect(next.notCalled).to.equal(true);
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should pass service errors to the error handler", async () => {
@@ -166,23 +178,27 @@ describe("Note Controller", () => {
         content: "Updated content",
       };
       sandbox.stub(noteService, "updateNote").resolves(note);
-      await noteController.update(req, res, next);
-      expect(
-        noteService.updateNote.calledOnceWith({
-          noteId: "note123",
-          owner: "user123",
-          title: "Updated Note",
-          content: "Updated content",
-        })
-      ).to.equal(true);
-      expect(res.status.calledOnceWith(200)).to.equal(true);
-      expect(
-        res.json.calledOnceWith({
-          message: "Note updated successfully.",
-          note,
-        })
-      ).to.equal(true);
-      expect(next.notCalled).to.equal(true);
+      try {
+        await noteController.update(req, res, next);
+        expect(
+          noteService.updateNote.calledOnceWith({
+            noteId: "note123",
+            owner: "user123",
+            title: "Updated Note",
+            content: "Updated content",
+          })
+        ).to.equal(true);
+        expect(res.status.calledOnceWith(200)).to.equal(true);
+        expect(
+          res.json.calledOnceWith({
+            message: "Note updated successfully.",
+            note,
+          })
+        ).to.equal(true);
+        expect(next.notCalled).to.equal(true);
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should reject invalid note data", async () => {
@@ -218,16 +234,20 @@ describe("Note Controller", () => {
         message: "Note deleted successfully.",
       };
       sandbox.stub(noteService, "deleteNote").resolves(result);
-      await noteController.remove(req, res, next);
-      expect(
-        noteService.deleteNote.calledOnceWith({
-          noteId: "note123",
-          owner: "user123",
-        })
-      ).to.equal(true);
-      expect(res.status.calledOnceWith(200)).to.equal(true);
-      expect(res.json.calledOnceWith(result)).to.equal(true);
-      expect(next.notCalled).to.equal(true);
+      try {
+        await noteController.remove(req, res, next);
+        expect(
+          noteService.deleteNote.calledOnceWith({
+            noteId: "note123",
+            owner: "user123",
+          })
+        ).to.equal(true);
+        expect(res.status.calledOnceWith(200)).to.equal(true);
+        expect(res.json.calledOnceWith(result)).to.equal(true);
+        expect(next.notCalled).to.equal(true);
+      } catch (error) {
+        expect.fail(error);
+      }
     });
 
     it("should pass service errors to the error handler", async () => {

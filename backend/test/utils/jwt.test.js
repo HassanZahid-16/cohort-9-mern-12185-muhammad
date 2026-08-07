@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const jwt = require("jsonwebtoken");
+
 const { generateAccessToken } = require("../../src/utils/jwt");
 
 describe("JWT Utility", () => {
@@ -10,7 +11,11 @@ describe("JWT Utility", () => {
   });
 
   after(() => {
-    process.env.JWT_SECRET = originalSecret;
+    if (originalSecret === undefined) {
+      delete process.env.JWT_SECRET;
+    } else {
+      process.env.JWT_SECRET = originalSecret;
+    }
   });
 
   it("should generate a valid JWT token", () => {
