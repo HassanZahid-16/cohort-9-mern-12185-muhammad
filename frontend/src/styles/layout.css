@@ -1,0 +1,52 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 32px;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+}
+
+.brand {
+  font-weight: 700;
+}
+
+.main-nav {
+  display: flex;
+  gap: 18px;
+}
+
+.page-content {
+  width: min(1100px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 56px 0;
+}
+
+.welcome,
+.not-found {
+  max-width: 680px;
+}
+
+.eyebrow {
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.welcome h1,
+.not-found h1 {
+  margin: 0 0 16px;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.05;
+}
+
+.welcome p,
+.not-found p {
+  line-height: 1.7;
+}
