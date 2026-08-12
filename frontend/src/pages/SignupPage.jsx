@@ -102,7 +102,7 @@ function SignupPage() {
             </button>
           </div>
 
-          {error && <p className="form-error">{error}</p>}
+          {error && <p className="form-error" role="alert">{error}</p>}
 
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Creating account..." : "Create account"}

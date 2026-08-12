@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react";
 import AuthContext from "./AuthContext";
 
-const TOKEN_KEY = "notes_app_token";
 const USER_KEY = "notes_app_user";
+const API_URL =
+  import.meta.env.VITE_AUTH_API_URL || "http://localhost:5000/api/auth";
 
 function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem(TOKEN_KEY);
-  });
-
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem(USER_KEY);
     if (!storedUser) {
@@ -23,14 +20,6 @@ function AuthProvider({ children }) {
   });
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem(TOKEN_KEY, token);
-    } else {
-      localStorage.removeItem(TOKEN_KEY);
-    }
-  }, [token]);
-
-  useEffect(() => {
     if (user) {
       localStorage.setItem(USER_KEY, JSON.stringify(user));
     } else {
@@ -39,16 +28,25 @@ function AuthProvider({ children }) {
   }, [user]);
 
   const login = (authData) => {
-    setToken(authData.token);
     setUser(authData.user);
   };
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      setUser(null);
+    }
   };
-
-  const value = {token,user,isAuthenticated: Boolean(token),login,logout,};
+  const value = {
+    user,
+    isAuthenticated: Boolean(user),
+    login,
+    logout,
+  };
 
   return (
     <AuthContext.Provider value={value}>

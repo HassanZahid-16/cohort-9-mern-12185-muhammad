@@ -1,4 +1,13 @@
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL =
+  import.meta.env.VITE_AUTH_API_URL || "http://localhost:5000/api/auth";
+
+if (
+  !API_URL.startsWith("http://localhost") &&
+  !API_URL.startsWith("http://127.0.0.1") &&
+  !API_URL.startsWith("https://")
+) {
+  throw new Error("Authentication API URL must use HTTPS outside local development.");
+}
 
 async function sendAuthRequest(endpoint, userDetails) {
   try {
@@ -7,6 +16,7 @@ async function sendAuthRequest(endpoint, userDetails) {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(userDetails),
     });
     const data = await response.json();
@@ -17,8 +27,9 @@ async function sendAuthRequest(endpoint, userDetails) {
   } catch (error) {
     if (error instanceof TypeError) {
       throw new Error(
-        "Unable to reach the server. Make sure the backend is running.", {
-            cause: error,
+        "Unable to reach the server. Make sure the backend is running.",
+        {
+          cause: error,
         }
       );
     }
