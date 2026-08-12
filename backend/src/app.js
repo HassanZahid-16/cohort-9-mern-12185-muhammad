@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const noteRoutes = require("./routes/noteRoutes");
 const requestLogger = require("./middlewares/requestLogger");
@@ -6,6 +7,7 @@ const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
+app.use(cors({origin: "http://localhost:5173",}));
 app.use(requestLogger);
 app.use(express.json());
 
