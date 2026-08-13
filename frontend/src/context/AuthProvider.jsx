@@ -7,18 +7,12 @@ const USER_KEY = "notes_app_user";
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
 
     const restoreSession = async () => {
-      const storedUser = localStorage.getItem(USER_KEY);
-      if (!storedUser) {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-        return;
-      }
       try {
         const validatedUser = await getCurrentUser();
         if (!isMounted) {
@@ -28,11 +22,12 @@ function AuthProvider({ children }) {
           setUser(validatedUser);
         } else {
           localStorage.removeItem(USER_KEY);
-        }
-      } catch {
-        if (isMounted) {
-          localStorage.removeItem(USER_KEY);
           setUser(null);
+        }
+        setAuthError(null);
+      } catch (error) {
+        if (isMounted) {
+          setAuthError(error.message);
         }
       } finally {
         if (isMounted) {
@@ -57,17 +52,25 @@ function AuthProvider({ children }) {
 
   const login = (authData) => {
     setUser(authData.user);
+    setAuthError(null);
   };
 
   const logout = async () => {
-    await logoutUser();
-    setUser(null);
+    try {
+      await logoutUser();
+      setUser(null);
+      setAuthError(null);
+    } catch (error) {
+      setAuthError(error.message);
+      throw error;
+    }
   };
 
   const value = {
     user,
     isAuthenticated: Boolean(user),
     isLoading,
+    authError,
     login,
     logout,
   };

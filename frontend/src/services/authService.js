@@ -44,36 +44,59 @@ async function sendAuthRequest(endpoint, userDetails) {
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${API_URL}/me`, {
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
-  });
-  if (response.status === 401) {
-    return null;
+  try {
+    const response = await fetch(`${API_URL}/me`, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (response.status === 401) {
+      return null;
+    }
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Unable to validate the session.");
+    }
+    return data.user;
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "Unable to validate the session."
+    ) {
+      throw error;
+    }
+    throw new Error("Unable to validate the session.", {
+      cause: error,
+    });
   }
-
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message || "Unable to validate the session.");
-  }
-  return data.user;
 }
 
 export async function logoutUser() {
-  const csrfToken = getCsrfToken();
-  const response = await fetch(`${API_URL}/logout`, {
-    method: "POST",
-    headers: {
-      "X-CSRF-Token": csrfToken || "",
-    },
-    credentials: "include",
-  });
-  if (!response.ok) {
-    const data = await response.json().catch(() => null);
-    throw new Error(data?.message || "Unable to log out. Please try again.");
+  try {
+    const csrfToken = getCsrfToken();
+    const response = await fetch(`${API_URL}/logout`, {
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": csrfToken || "",
+      },
+      credentials: "include",
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new Error(data?.message || "Unable to log out. Please try again.");
+    }
+    return response.json();
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "Unable to log out. Please try again."
+    ) {
+      throw error;
+    }
+    throw new Error("Unable to log out. Please try again.", {
+      cause: error,
+    });
   }
-  return response.json();
 }
 
 export function registerUser(userDetails) {
