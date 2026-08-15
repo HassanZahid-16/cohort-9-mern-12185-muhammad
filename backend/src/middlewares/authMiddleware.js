@@ -1,24 +1,12 @@
 const jwt = require("jsonwebtoken");
 
 const authenticate = (req, res, next) => {
-  const authorizationHeader = req.headers.authorization;
-  if (!authorizationHeader) {
+  const token = req.cookies.notes_app_token;
+  if (!token) {
     return res.status(401).json({
       message: "Authentication token is required.",
     });
   }
-  const parts = authorizationHeader.trim().split(/\s+/);
-  if (
-    parts.length !== 2 ||
-    parts[0] !== "Bearer" ||
-    !parts[1]
-  ) {
-    return res.status(401).json({
-      message: "Invalid authentication token.",
-    });
-  }
-  const token = parts[1];
-
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     req.user = {

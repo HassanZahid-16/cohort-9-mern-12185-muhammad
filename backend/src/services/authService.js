@@ -8,7 +8,6 @@ const registerUser = async ({ fullName, email, password }) => {
     const existingUser = await User.findOne({
       email,
     });
-
     if (existingUser) {
       throw new AppError(
         "Email is already registered.",
@@ -83,4 +82,29 @@ const loginUser = async ({ email, password }) => {
   }
 };
 
-module.exports = {registerUser,loginUser,};
+const getUserById = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new AppError(
+        "User not found.",
+        401
+      );
+    }
+    return {
+      id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+    };
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError(
+      "Internal server error.",
+      500
+    );
+  }
+};
+
+module.exports = {registerUser,loginUser,getUserById,};

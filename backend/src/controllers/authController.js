@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const authService = require("../services/authService");
 const {
   validateRegistration,
@@ -43,13 +44,53 @@ const login = async (req, res, next) => {
       },
       "User login completed."
     );
+    res.cookie("notes_app_token", result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    const csrfToken = crypto.randomBytes(32).toString("hex");
+    res.cookie("notes_app_csrf", csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
     return res.status(200).json({
       message: "Login successful.",
-      ...result,
+      user: result.user,
     });
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = {register,login,};
+const me = async (req, res, next) => {
+  try {
+    const user = await authService.getUserById(req.user.id);
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const logout = (req, res) => {
+  res.clearCookie("notes_app_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+  res.clearCookie("notes_app_csrf", {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+  return res.status(200).json({
+    message: "Logout successful.",
+  });
+};
+
+module.exports = { register, login, me, logout };

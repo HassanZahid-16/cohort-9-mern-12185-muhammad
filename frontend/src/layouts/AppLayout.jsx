@@ -1,6 +1,15 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import useAuth from "../context/useAuth";
 
 function AppLayout() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -10,6 +19,9 @@ function AppLayout() {
 
         <nav className="main-nav" aria-label="Main navigation">
           <Link to="/">Home</Link>
+          <button type="button" onClick={handleLogout}>
+            Log out
+          </button>
         </nav>
       </header>
 
