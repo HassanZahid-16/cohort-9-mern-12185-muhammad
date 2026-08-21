@@ -5,6 +5,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import HomePage from "../pages/HomePage";
 import LoginPage from "../pages/LoginPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import NoteEditorPage from "../pages/NoteEditorPage";
 import SignupPage from "../pages/SignupPage";
 
 function AppRoutes() {
@@ -17,6 +18,8 @@ function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/notes/new" element={<NoteEditorPage />} />
+            <Route path="/notes/:noteId" element={<NoteEditorPage />} />
           </Route>
         </Route>
 
