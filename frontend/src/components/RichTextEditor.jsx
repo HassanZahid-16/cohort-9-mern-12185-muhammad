@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -13,6 +13,13 @@ const formats = ["header","bold","italic","underline","list","bullet","link",];
 
 function RichTextEditor({ value, onChange }) {
   const editorRef = useRef(null);
+
+  useEffect(() => {
+    const editor = editorRef.current?.getEditor();
+    if (editor) {
+      editor.root.setAttribute("aria-label", "Content");
+    }
+  }, []);
 
   function handleChange(nextValue) {
     if (nextValue === "<p><br></p>") {

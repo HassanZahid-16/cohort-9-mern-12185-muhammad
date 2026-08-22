@@ -505,6 +505,7 @@
 }
 
 .rich-text-editor {
+  position: relative;
   width: 100%;
 }
 

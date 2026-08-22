@@ -1,13 +1,20 @@
+import { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import useAuth from "../context/useAuth";
 
 function AppLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [logoutError, setLogoutError] = useState("");
 
-  function handleLogout() {
-    logout();
-    navigate("/login");
+  async function handleLogout() {
+    try {
+      setLogoutError("");
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      setLogoutError(error.message);
+    }
   }
   
   return (
@@ -29,6 +36,11 @@ function AppLayout() {
       </header>
 
       <main className="page-content">
+        {logoutError && (
+          <p className="page-error" role="alert">
+            {logoutError}
+          </p>
+        )}
         <Outlet />
       </main>
     </div>
