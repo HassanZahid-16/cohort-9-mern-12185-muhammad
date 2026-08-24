@@ -25,6 +25,13 @@
   gap: 18px;
 }
 
+.user-greeting {
+  display: inline-flex;
+  align-items: center;
+  color: #475467;
+  font-size: 0.95rem;
+}
+
 .page-content {
   width: min(1100px, calc(100% - 40px));
   margin: 0 auto;
@@ -158,4 +165,369 @@
   display: block;
   width: 20px;
   height: 20px;
+}
+
+.notes-page {
+  padding-bottom: 40px;
+}
+
+.notes-heading {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 32px;
+}
+
+.add-note-button {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  z-index: 999;
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #1f2937;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.add-note-button:hover {
+  background: #111827;
+}
+
+.add-note-button:focus-visible {
+  outline: 2px solid #94a3b8;
+  outline-offset: 3px;
+}
+
+.primary-action,
+.secondary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary-action {
+  padding: 11px 16px;
+  background: #1f2937;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.primary-action:hover {
+  background: #111827;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.note-card {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px;
+  border: 1px solid #d9dee7;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.note-card-content h2 {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+}
+
+.note-card-content p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: #667085;
+  line-height: 1.6;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+}
+
+.note-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eaecf0;
+}
+
+.note-card-footer a {
+  font-weight: 600;
+}
+
+.delete-note {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+  color: #b42318;
+  cursor: pointer;
+}
+
+.delete-note:hover {
+  text-decoration: none;
+}
+
+.edit-note {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  color: #1f2937;
+  text-decoration: none;
+}
+
+.edit-note:hover {
+  color: #111827;
+}
+
+.secondary-action {
+  padding: 10px 15px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+}
+
+.notes-status {
+  color: #667085;
+}
+
+.page-error {
+  margin-bottom: 20px;
+  color: #b42318;
+}
+
+@media (max-width: 850px) {
+  .notes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .notes-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .notes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .primary-action {
+    width: 100%;
+  }
+
+  .add-note-button {
+    right: 20px;
+    bottom: 20px;
+  }
+}
+
+.note-editor-page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.note-editor-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.note-editor-heading h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.05;
+}
+
+.note-editor-form {
+  display: grid;
+  gap: 20px;
+  padding: 28px;
+  border: 1px solid #d9dee7;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.note-editor-form label {
+  display: grid;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.note-editor-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #fff;
+  color: #222;
+}
+
+.note-editor-form input:focus {
+  outline: 2px solid #94a3b8;
+  outline-offset: 1px;
+}
+
+.note-rich-text {
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.note-rich-text:focus-within {
+  outline: 2px solid #94a3b8;
+  outline-offset: 1px;
+}
+
+.note-card-content .note-rich-text {
+  border: 0;
+  overflow: visible;
+}
+
+.note-card-content .note-rich-text .ql-editor {
+  min-height: 0;
+  padding: 0;
+}
+
+.note-card-content .note-rich-text p {
+  margin: 0 0 10px;
+  color: #667085;
+  line-height: 1.6;
+}
+
+.note-card-content .note-rich-text p:last-child {
+  margin-bottom: 0;
+}
+
+.note-card-content .note-rich-text ul,
+.note-card-content .note-rich-text ol {
+  margin: 0 0 10px;
+  padding-left: 24px;
+  color: #667085;
+}
+
+.note-card-content .note-rich-text h1,
+.note-card-content .note-rich-text h2,
+.note-card-content .note-rich-text h3 {
+  margin: 0 0 10px;
+}
+
+.note-card-content .note-rich-text a {
+  text-decoration: underline;
+}
+
+.note-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.note-editor-actions .primary-action,
+.note-editor-actions .secondary-action {
+  border: 0;
+}
+
+.note-editor-actions .secondary-action {
+  border: 1px solid #cbd5e1;
+}
+
+@media (max-width: 620px) {
+  .note-editor-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .note-editor-heading .secondary-action {
+    width: 100%;
+  }
+
+  .note-editor-form {
+    padding: 20px;
+  }
+
+  .note-editor-actions {
+    flex-direction: column-reverse;
+  }
+
+  .note-editor-actions .primary-action,
+  .note-editor-actions .secondary-action {
+    width: 100%;
+  }
+}
+
+.note-editor-form .quill {
+  width: 100%;
+}
+
+.note-editor-form .ql-toolbar {
+  border: 1px solid #cbd5e1;
+  border-radius: 7px 7px 0 0;
+}
+
+.note-editor-form .ql-container {
+  height: 150px;
+  border: 1px solid #cbd5e1;
+  border-top: 0;
+  border-radius: 0 0 7px 7px;
+}
+
+.note-editor-form .ql-editor {
+  min-height: 150px;
+  padding: 12px 14px;
+  line-height: 1.6;
+}
+
+.rich-text-editor {
+  position: relative;
+  width: 100%;
+}
+
+.rich-text-header-picker {
+  position: absolute;
+  z-index: 2;
+  margin: 7px 0 0 8px;
+}
+
+.rich-text-header-picker select {
+  padding: 3px 24px 3px 6px;
+  border: 0;
+  background: transparent;
+  color: #475467;
+  font: inherit;
+}
+
+.rich-text-header-picker select:focus {
+  outline: 2px solid #94a3b8;
+  outline-offset: 1px;
+}
+
+.rich-text-editor .ql-toolbar {
+  padding-left: 140px;
 }
