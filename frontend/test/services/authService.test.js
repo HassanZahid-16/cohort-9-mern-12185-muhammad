@@ -19,19 +19,25 @@ describe("authService", () => {
         ok: true,
         json: async () => responseData,
       });
-      await expect(
-        loginUser({
-          email: "hassan@example.com",
-          password: "password123",
-        })
-      ).resolves.toEqual(responseData);
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/login"),
-        expect.objectContaining({
-          method: "POST",
-          credentials: "include",
-        })
-      );
+      try {
+        await expect(
+          loginUser({
+            email: "hassan@example.com",
+            password: "password123",
+          })
+        ).resolves.toEqual(responseData);
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining("/login"),
+          expect.objectContaining({
+            method: "POST",
+            credentials: "include",
+          })
+        );
+      } catch (error) {
+        throw new Error("Failed during successful login flow.", {
+          cause: error,
+        });
+      }
     });
 
     it("uses the backend message when login is rejected", async () => {
@@ -41,12 +47,18 @@ describe("authService", () => {
           message: "Invalid email or password.",
         }),
       });
-      await expect(
-        loginUser({
-          email: "hassan@example.com",
-          password: "wrong-password",
-        })
-      ).rejects.toThrow("Invalid email or password.");
+      try {
+        await expect(
+          loginUser({
+            email: "hassan@example.com",
+            password: "wrong-password",
+          })
+        ).rejects.toThrow("Invalid email or password.");
+      } catch (error) {
+        throw new Error("Failed during rejected login flow.", {
+          cause: error,
+        });
+      }
     });
   });
 
@@ -58,18 +70,24 @@ describe("authService", () => {
           message: "User registered successfully.",
         }),
       });
-      await registerUser({
-        fullName: "Muhammad Hassan",
-        email: "hassan@example.com",
-        password: "password123",
-      });
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/register"),
-        expect.objectContaining({
-          method: "POST",
-          credentials: "include",
-        })
-      );
+      try {
+        await registerUser({
+          fullName: "Muhammad Hassan",
+          email: "hassan@example.com",
+          password: "password123",
+        });
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining("/register"),
+          expect.objectContaining({
+            method: "POST",
+            credentials: "include",
+          })
+        );
+      } catch (error) {
+        throw new Error("Failed during user registration flow.", {
+          cause: error,
+        });
+      }
     });
   });
 
@@ -80,7 +98,13 @@ describe("authService", () => {
         ok: false,
         json: async () => ({}),
       });
-      await expect(getCurrentUser()).resolves.toBeNull();
+      try {
+        await expect(getCurrentUser()).resolves.toBeNull();
+      } catch (error) {
+        throw new Error("Failed during unauthenticated session check.", {
+          cause: error,
+        });
+      }
     });
 
     it("returns the current user when the session is valid", async () => {
@@ -94,7 +118,13 @@ describe("authService", () => {
         ok: true,
         json: async () => ({ user }),
       });
-      await expect(getCurrentUser()).resolves.toEqual(user);
+      try {
+        await expect(getCurrentUser()).resolves.toEqual(user);
+      } catch (error) {
+        throw new Error("Failed during authenticated session check.", {
+          cause: error,
+        });
+      }
     });
   });
 
@@ -107,19 +137,25 @@ describe("authService", () => {
           message: "Logout successful.",
         }),
       });
-      await expect(logoutUser()).resolves.toEqual({
-        message: "Logout successful.",
-      });
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/logout"),
-        expect.objectContaining({
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "X-CSRF-Token": "test-csrf-token",
-          },
-        })
-      );
+      try {
+        await expect(logoutUser()).resolves.toEqual({
+          message: "Logout successful.",
+        });
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining("/logout"),
+          expect.objectContaining({
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "X-CSRF-Token": "test-csrf-token",
+            },
+          })
+        );
+      } catch (error) {
+        throw new Error("Failed during logout flow.", {
+          cause: error,
+        });
+      }
     });
   });
 });

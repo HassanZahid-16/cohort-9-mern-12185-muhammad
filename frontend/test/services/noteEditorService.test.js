@@ -16,15 +16,21 @@ describe("noteEditorService", () => {
         ok: true,
         json: async () => ({ note }),
       });
-      await expect(getNote("note-42")).resolves.toEqual(note);
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/note-42"),
-        expect.objectContaining({
-          method: "GET",
-          credentials: "include",
-          cache: "no-store",
-        })
-      );
+      try {
+        await expect(getNote("note-42")).resolves.toEqual(note);
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining("/note-42"),
+          expect.objectContaining({
+            method: "GET",
+            credentials: "include",
+            cache: "no-store",
+          })
+        );
+      } catch (error) {
+        throw new Error("Failed during successful note loading flow.", {
+          cause: error,
+        });
+      }
     });
 
     it("throws the server message when loading the note fails", async () => {
@@ -34,9 +40,15 @@ describe("noteEditorService", () => {
           message: "Unable to load the note.",
         }),
       });
-      await expect(getNote("missing-note")).rejects.toThrow(
-        "Unable to load the note."
-      );
+      try {
+        await expect(getNote("missing-note")).rejects.toThrow(
+          "Unable to load the note."
+        );
+      } catch (error) {
+        throw new Error("Failed during rejected note loading flow.", {
+          cause: error,
+        });
+      }
     });
   });
 
@@ -51,26 +63,32 @@ describe("noteEditorService", () => {
         ok: true,
         json: async () => ({ note }),
       });
-      await expect(
-        saveNote(undefined, {
-          title: "Weekend ideas",
-          content: "<p>Things I want to work on.</p>",
-        })
-      ).resolves.toEqual(note);
-      expect(fetch).toHaveBeenCalledWith(
-        expect.not.stringContaining("/undefined"),
-        expect.objectContaining({
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+      try {
+        await expect(
+          saveNote(undefined, {
             title: "Weekend ideas",
             content: "<p>Things I want to work on.</p>",
-          }),
-        })
-      );
+          })
+        ).resolves.toEqual(note);
+        expect(fetch).toHaveBeenCalledWith(
+          expect.not.stringContaining("/undefined"),
+          expect.objectContaining({
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: "Weekend ideas",
+              content: "<p>Things I want to work on.</p>",
+            }),
+          })
+        );
+      } catch (error) {
+        throw new Error("Failed during new note save flow.", {
+          cause: error,
+        });
+      }
     });
 
     it("updates an existing note with a PUT request", async () => {
@@ -83,26 +101,32 @@ describe("noteEditorService", () => {
         ok: true,
         json: async () => ({ note }),
       });
-      await expect(
-        saveNote("note-42", {
-          title: "Updated title",
-          content: "<p>Updated content.</p>",
-        })
-      ).resolves.toEqual(note);
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/note-42"),
-        expect.objectContaining({
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+      try {
+        await expect(
+          saveNote("note-42", {
             title: "Updated title",
             content: "<p>Updated content.</p>",
-          }),
-        })
-      );
+          })
+        ).resolves.toEqual(note);
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining("/note-42"),
+          expect.objectContaining({
+            method: "PUT",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: "Updated title",
+              content: "<p>Updated content.</p>",
+            }),
+          })
+        );
+      } catch (error) {
+        throw new Error("Failed during existing note update flow.", {
+          cause: error,
+        });
+      }
     });
 
     it("throws the server message when saving the note fails", async () => {
@@ -112,12 +136,18 @@ describe("noteEditorService", () => {
           message: "Unable to save the note.",
         }),
       });
-      await expect(
-        saveNote("note-42", {
-          title: "Updated title",
-          content: "<p>Updated content.</p>",
-        })
-      ).rejects.toThrow("Unable to save the note.");
+      try {
+        await expect(
+          saveNote("note-42", {
+            title: "Updated title",
+            content: "<p>Updated content.</p>",
+          })
+        ).rejects.toThrow("Unable to save the note.");
+      } catch (error) {
+        throw new Error("Failed during rejected note save flow.", {
+          cause: error,
+        });
+      }
     });
   });
 });

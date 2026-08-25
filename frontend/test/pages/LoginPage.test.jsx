@@ -78,14 +78,20 @@ describe("LoginPage", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Log in" }));
 
-    await waitFor(() => {
-      expect(loginUser).toHaveBeenCalledWith({
-        email: "hassan@example.com",
-        password: "password123",
+    try {
+      await waitFor(() => {
+        expect(loginUser).toHaveBeenCalledWith({
+          email: "hassan@example.com",
+          password: "password123",
+        });
       });
-    });
-    expect(login).toHaveBeenCalledWith(result);
-    expect(await screen.findByText("Notes home")).toBeInTheDocument();
+      expect(login).toHaveBeenCalledWith(result);
+      expect(await screen.findByText("Notes home")).toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during successful login and navigation flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("shows the server error when login is rejected", async () => {
@@ -104,10 +110,17 @@ describe("LoginPage", () => {
       },
     });
     fireEvent.click(screen.getByRole("button", { name: "Log in" }));
-    expect(
-      await screen.findByRole("alert")
-    ).toHaveTextContent("Invalid email or password.");
-    expect(login).not.toHaveBeenCalled();
+
+    try {
+      expect(
+        await screen.findByRole("alert")
+      ).toHaveTextContent("Invalid email or password.");
+      expect(login).not.toHaveBeenCalled();
+    } catch (error) {
+      throw new Error("Failed during rejected login error flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("toggles the password field between hidden and visible", () => {

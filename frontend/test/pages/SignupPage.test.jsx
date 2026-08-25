@@ -83,15 +83,20 @@ describe("SignupPage", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Create account" })
     );
-
-    await waitFor(() => {
-      expect(registerUser).toHaveBeenCalledWith({
-        fullName: "Muhammad Hassan",
-        email: "hassan@example.com",
-        password: "password123",
+    try {
+      await waitFor(() => {
+        expect(registerUser).toHaveBeenCalledWith({
+          fullName: "Muhammad Hassan",
+          email: "hassan@example.com",
+          password: "password123",
+        });
       });
-    });
-    expect(await screen.findByText("Login page")).toBeInTheDocument();
+      expect(await screen.findByText("Login page")).toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during registration and navigation flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("shows the server error when registration fails", async () => {
@@ -117,8 +122,14 @@ describe("SignupPage", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Create account" })
     );
-    expect(
-      await screen.findByRole("alert")
-    ).toHaveTextContent("Email is already registered.");
+    try {
+      expect(
+        await screen.findByRole("alert")
+      ).toHaveTextContent("Email is already registered.");
+    } catch (error) {
+      throw new Error("Failed during registration error flow.", {
+        cause: error,
+      });
+    }
   });
 });

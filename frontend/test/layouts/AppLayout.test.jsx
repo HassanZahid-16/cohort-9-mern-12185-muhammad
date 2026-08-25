@@ -45,11 +45,16 @@ describe("AppLayout", () => {
       logout,
     });
     fireEvent.click(screen.getByRole("button", { name: "Log out" }));
-
-    await waitFor(() => {
-      expect(logout).toHaveBeenCalledTimes(1);
-    });
-    expect(await screen.findByText("Login page")).toBeInTheDocument();
+    try {
+      await waitFor(() => {
+        expect(logout).toHaveBeenCalledTimes(1);
+      });
+      expect(await screen.findByText("Login page")).toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during logout completion and navigation flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("shows an error when logout fails", async () => {
@@ -63,8 +68,14 @@ describe("AppLayout", () => {
       logout,
     });
     fireEvent.click(screen.getByRole("button", { name: "Log out" }));
-    expect(
-      await screen.findByRole("alert")
-    ).toHaveTextContent("Unable to log out. Please try again.");
+    try {
+      expect(
+        await screen.findByRole("alert")
+      ).toHaveTextContent("Unable to log out. Please try again.");
+    } catch (error) {
+      throw new Error("Failed during logout error handling flow.", {
+        cause: error,
+      });
+    }
   });
 });

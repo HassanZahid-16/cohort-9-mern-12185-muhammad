@@ -23,7 +23,13 @@ describe("noteService", () => {
         ok: true,
         json: async () => ({ notes }),
       });
-      await expect(getNotes()).resolves.toEqual(notes);
+      try {
+        await expect(getNotes()).resolves.toEqual(notes);
+      } catch (error) {
+        throw new Error("Failed during notes loading flow.", {
+          cause: error,
+        });
+      }
     });
 
     it("throws the server message when loading notes fails", async () => {
@@ -33,9 +39,15 @@ describe("noteService", () => {
           message: "Unable to load your notes.",
         }),
       });
-      await expect(getNotes()).rejects.toThrow(
-        "Unable to load your notes."
-      );
+      try {
+        await expect(getNotes()).rejects.toThrow(
+          "Unable to load your notes."
+        );
+      } catch (error) {
+        throw new Error("Failed during rejected notes loading flow.", {
+          cause: error,
+        });
+      }
     });
   });
 
@@ -47,16 +59,22 @@ describe("noteService", () => {
           message: "Note deleted successfully.",
         }),
       });
-      await expect(deleteNote("note-123")).resolves.toEqual({
-        message: "Note deleted successfully.",
-      });
-      expect(fetch).toHaveBeenCalledWith(
-        expect.stringContaining("/note-123"),
-        expect.objectContaining({
-          method: "DELETE",
-          credentials: "include",
-        })
-      );
+      try {
+        await expect(deleteNote("note-123")).resolves.toEqual({
+          message: "Note deleted successfully.",
+        });
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining("/note-123"),
+          expect.objectContaining({
+            method: "DELETE",
+            credentials: "include",
+          })
+        );
+      } catch (error) {
+        throw new Error("Failed during note deletion flow.", {
+          cause: error,
+        });
+      }
     });
 
     it("throws the server message when deleting a note fails", async () => {
@@ -66,9 +84,15 @@ describe("noteService", () => {
           message: "Note not found.",
         }),
       });
-      await expect(deleteNote("missing-note")).rejects.toThrow(
-        "Note not found."
-      );
+      try {
+        await expect(deleteNote("missing-note")).rejects.toThrow(
+          "Note not found."
+        );
+      } catch (error) {
+        throw new Error("Failed during rejected note deletion flow.", {
+          cause: error,
+        });
+      }
     });
   });
 });

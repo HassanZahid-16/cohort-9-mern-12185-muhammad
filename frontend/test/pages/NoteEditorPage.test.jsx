@@ -64,10 +64,16 @@ describe("NoteEditorPage", () => {
   it("does not save when the title or content is empty", async () => {
     renderNewNote();
     fireEvent.click(screen.getByRole("button", { name: "Save note" }));
-    expect(
-      await screen.findByRole("alert")
-    ).toHaveTextContent("Title and content are required.");
-    expect(saveNote).not.toHaveBeenCalled();
+    try {
+      expect(
+        await screen.findByRole("alert")
+      ).toHaveTextContent("Title and content are required.");
+      expect(saveNote).not.toHaveBeenCalled();
+    } catch (error) {
+      throw new Error("Failed during empty note validation flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("saves a new note and returns to the notes page", async () => {
@@ -81,13 +87,19 @@ describe("NoteEditorPage", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Save note" }));
 
-    await waitFor(() => {
-      expect(saveNote).toHaveBeenCalledWith(undefined, {
-        title: "Weekend ideas",
-        content: "<p>Things I want to work on this weekend.</p>",
+    try {
+      await waitFor(() => {
+        expect(saveNote).toHaveBeenCalledWith(undefined, {
+          title: "Weekend ideas",
+          content: "<p>Things I want to work on this weekend.</p>",
+        });
       });
-    });
-    expect(await screen.findByText("Notes home")).toBeInTheDocument();
+      expect(await screen.findByText("Notes home")).toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during new note save and navigation flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("loads an existing note for editing", async () => {
@@ -97,21 +109,27 @@ describe("NoteEditorPage", () => {
       content: "<p>Call the client before Friday.</p>",
     });
     renderExistingNote();
-    expect(
-      screen.getByText("Loading your note...")
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByDisplayValue("Things to remember")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByDisplayValue(
-        "<p>Call the client before Friday.</p>"
-      )
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Edit note" })
-    ).toBeInTheDocument();
-    expect(getNote).toHaveBeenCalledWith("note-42");
+    try {
+      expect(
+        screen.getByText("Loading your note...")
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByDisplayValue("Things to remember")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByDisplayValue(
+          "<p>Call the client before Friday.</p>"
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: "Edit note" })
+      ).toBeInTheDocument();
+      expect(getNote).toHaveBeenCalledWith("note-42");
+    } catch (error) {
+      throw new Error("Failed during existing note loading flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("saves changes to an existing note", async () => {
@@ -122,25 +140,32 @@ describe("NoteEditorPage", () => {
     });
     saveNote.mockResolvedValueOnce({});
     renderExistingNote();
-    const titleInput = await screen.findByDisplayValue("Old title");
-    const contentInput = screen.getByDisplayValue("<p>Old content</p>");
-    fireEvent.change(titleInput, {
-      target: { value: "Updated title" },
-    });
-    fireEvent.change(contentInput, {
-      target: { value: "<p>Updated content</p>" },
-    });
-    fireEvent.click(
-      screen.getByRole("button", { name: "Edit note" })
-    );
 
-    await waitFor(() => {
-      expect(saveNote).toHaveBeenCalledWith("note-42", {
-        title: "Updated title",
-        content: "<p>Updated content</p>",
+    try {
+      const titleInput = await screen.findByDisplayValue("Old title");
+      const contentInput = screen.getByDisplayValue("<p>Old content</p>");
+      fireEvent.change(titleInput, {
+        target: { value: "Updated title" },
       });
-    });
-    expect(await screen.findByText("Notes home")).toBeInTheDocument();
+      fireEvent.change(contentInput, {
+        target: { value: "<p>Updated content</p>" },
+      });
+      fireEvent.click(
+        screen.getByRole("button", { name: "Edit note" })
+      );
+
+      await waitFor(() => {
+        expect(saveNote).toHaveBeenCalledWith("note-42", {
+          title: "Updated title",
+          content: "<p>Updated content</p>",
+        });
+      });
+      expect(await screen.findByText("Notes home")).toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during existing note save flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("shows the server error when loading an existing note fails", async () => {
@@ -148,9 +173,15 @@ describe("NoteEditorPage", () => {
       new Error("Unable to load the note.")
     );
     renderExistingNote();
-    expect(
-      await screen.findByRole("alert")
-    ).toHaveTextContent("Unable to load the note.");
+    try {
+      expect(
+        await screen.findByRole("alert")
+      ).toHaveTextContent("Unable to load the note.");
+    } catch (error) {
+      throw new Error("Failed during existing note loading error flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("shows the server error when saving fails", async () => {
@@ -165,11 +196,17 @@ describe("NoteEditorPage", () => {
       target: { value: "<p>This will not be saved.</p>" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Save note" }));
-    expect(
-      await screen.findByRole("alert")
-    ).toHaveTextContent("Unable to save the note.");
-    expect(
-      screen.getByRole("button", { name: "Save note" })
-    ).toBeInTheDocument();
+    try {
+      expect(
+        await screen.findByRole("alert")
+      ).toHaveTextContent("Unable to save the note.");
+      expect(
+        screen.getByRole("button", { name: "Save note" })
+      ).toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during note save error flow.", {
+        cause: error,
+      });
+    }
   });
 });

@@ -29,10 +29,16 @@ describe("AuthProvider", () => {
     const { result } = renderHook(() => useAuth(), {
       wrapper,
     });
+    try {
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+    } catch (error) {
+      throw new Error("Failed while waiting for authentication state.", {
+        cause: error,
+      });
+    }
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
     expect(result.current.user).toBeNull();
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.authError).toBeNull();
@@ -42,19 +48,30 @@ describe("AuthProvider", () => {
     const { result } = renderHook(() => useAuth(), {
       wrapper,
     });
+    try {
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+    } catch (error) {
+      throw new Error("Failed while waiting for authentication state.", {
+        cause: error,
+      });
+    }
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
     const user = {
       id: "user-123",
       fullName: "Muhammad Hassan",
       email: "hassan@example.com",
     };
-
-    act(() => {
-      result.current.login({ user });
-    });
+    try {
+      act(() => {
+        result.current.login({ user });
+      });
+    } catch (error) {
+      throw new Error("Failed while logging in the test user.", {
+        cause: error,
+      });
+    }
     expect(result.current.user).toEqual(user);
     expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.authError).toBeNull();
@@ -65,23 +82,38 @@ describe("AuthProvider", () => {
     const { result } = renderHook(() => useAuth(), {
       wrapper,
     });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
+    try {
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+    } catch (error) {
+      throw new Error("Failed while waiting for authentication state.", {
+        cause: error,
+      });
+    }
     const user = {
       id: "user-123",
       fullName: "Muhammad Hassan",
       email: "hassan@example.com",
     };
-
-    act(() => {
-      result.current.login({ user });
-    });
-
-    await act(async () => {
-      await result.current.logout();
-    });
+    try {
+      act(() => {
+        result.current.login({ user });
+      });
+    } catch (error) {
+      throw new Error("Failed while logging in the test user.", {
+        cause: error,
+      });
+    }
+    try {
+      await act(async () => {
+        await result.current.logout();
+      });
+    } catch (error) {
+      throw new Error("Failed while completing logout.", {
+        cause: error,
+      });
+    }
     expect(logoutUser).toHaveBeenCalledTimes(1);
     expect(result.current.user).toBeNull();
     expect(result.current.isAuthenticated).toBe(false);

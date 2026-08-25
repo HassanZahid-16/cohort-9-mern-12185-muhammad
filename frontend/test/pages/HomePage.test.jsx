@@ -53,10 +53,17 @@ describe("HomePage", () => {
       },
     ]);
     renderHomePage();
-    expect(screen.getByText("Loading your notes...")).toBeInTheDocument();
-    expect(await screen.findByText("Shopping list")).toBeInTheDocument();
-    expect(screen.getByText("Work notes")).toBeInTheDocument();
-    expect(getNotes).toHaveBeenCalledTimes(1);
+
+    try {
+      expect(screen.getByText("Loading your notes...")).toBeInTheDocument();
+      expect(await screen.findByText("Shopping list")).toBeInTheDocument();
+      expect(screen.getByText("Work notes")).toBeInTheDocument();
+      expect(getNotes).toHaveBeenCalledTimes(1);
+    } catch (error) {
+      throw new Error("Failed during notes loading and display flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("shows the server error when notes cannot be loaded", async () => {
@@ -64,9 +71,15 @@ describe("HomePage", () => {
       new Error("Unable to load your notes.")
     );
     renderHomePage();
-    expect(
-      await screen.findByRole("alert")
-    ).toHaveTextContent("Unable to load your notes.");
+    try {
+      expect(
+        await screen.findByRole("alert")
+      ).toHaveTextContent("Unable to load your notes.");
+    } catch (error) {
+      throw new Error("Failed during notes loading error flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("removes a note after confirming deletion", async () => {
@@ -82,18 +95,24 @@ describe("HomePage", () => {
     });
     jest.spyOn(window, "confirm").mockReturnValue(true);
     renderHomePage();
-    expect(await screen.findByText("Shopping list")).toBeInTheDocument();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Delete Shopping list" })
-    );
+    try {
+      expect(await screen.findByText("Shopping list")).toBeInTheDocument();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Delete Shopping list" })
+      );
 
-    await waitFor(() => {
-      expect(deleteNote).toHaveBeenCalledWith("note-1");
-    });
+      await waitFor(() => {
+        expect(deleteNote).toHaveBeenCalledWith("note-1");
+      });
 
-    await waitFor(() => {
-      expect(screen.queryByText("Shopping list")).not.toBeInTheDocument();
-    });
+      await waitFor(() => {
+        expect(screen.queryByText("Shopping list")).not.toBeInTheDocument();
+      });
+    } catch (error) {
+      throw new Error("Failed during note deletion flow.", {
+        cause: error,
+      });
+    }
   });
 
   it("does not delete a note when deletion is cancelled", async () => {
@@ -106,11 +125,18 @@ describe("HomePage", () => {
     ]);
     jest.spyOn(window, "confirm").mockReturnValue(false);
     renderHomePage();
-    expect(await screen.findByText("Shopping list")).toBeInTheDocument();
-    fireEvent.click(
-      screen.getByRole("button", { name: "Delete Shopping list" })
-    );
-    expect(deleteNote).not.toHaveBeenCalled();
-    expect(screen.getByText("Shopping list")).toBeInTheDocument();
+
+    try {
+      expect(await screen.findByText("Shopping list")).toBeInTheDocument();
+      fireEvent.click(
+        screen.getByRole("button", { name: "Delete Shopping list" })
+      );
+      expect(deleteNote).not.toHaveBeenCalled();
+      expect(screen.getByText("Shopping list")).toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during cancelled note deletion flow.", {
+        cause: error,
+      });
+    }
   });
 });
