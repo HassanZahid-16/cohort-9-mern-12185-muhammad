@@ -10,7 +10,7 @@ async function getNote(noteId) {
       credentials: "include",
       cache: "no-store",
     });
-  } catch (error) {
+  } catch {
     throw new Error("Unable to load the note.");
   }
 
@@ -34,7 +34,7 @@ async function saveNote(noteId, noteDetails) {
       credentials: "include",
       body: JSON.stringify(noteDetails),
     });
-  } catch (error) {
+  } catch {
     throw new Error("Unable to save the note.");
   }
 

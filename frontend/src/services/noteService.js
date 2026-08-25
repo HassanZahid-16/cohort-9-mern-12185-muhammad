@@ -10,7 +10,7 @@ async function getNotes() {
       credentials: "include",
       cache: "no-store",
     });
-  } catch (error) {
+  } catch {
     throw new Error("Unable to load your notes.");
   }
 
@@ -28,7 +28,7 @@ async function deleteNote(noteId) {
       method: "DELETE",
       credentials: "include",
     });
-  } catch (error) {
+  } catch {
     throw new Error("Unable to delete the note.");
   }
 
