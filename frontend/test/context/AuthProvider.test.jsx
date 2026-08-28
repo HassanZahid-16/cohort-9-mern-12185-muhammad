@@ -120,24 +120,27 @@ describe("AuthProvider", () => {
     const consoleErrorSpy = jest
       .spyOn(console, "error")
       .mockImplementation(() => {});
-    getCurrentUser.mockRejectedValue(
-      new Error("Unable to validate the session.")
-    );
-    const { result } = renderHook(() => useAuth(), {
-      wrapper,
-    });
     try {
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
+      getCurrentUser.mockRejectedValue(
+        new Error("Unable to validate the session.")
+      );
+      const { result } = renderHook(() => useAuth(), {
+        wrapper,
       });
-    } catch (error) {
-      throw new Error("Failed while waiting for authentication state.", {
-        cause: error,
-      });
+      try {
+        await waitFor(() => {
+          expect(result.current.isLoading).toBe(false);
+        });
+      } catch (error) {
+        throw new Error("Failed while waiting for authentication state.", {
+          cause: error,
+        });
+      }
+      expect(result.current.user).toBeNull();
+      expect(result.current.isAuthenticated).toBe(false);
+      expect(consoleErrorSpy).toHaveBeenCalled();
+    } finally {
+      consoleErrorSpy.mockRestore();
     }
-    expect(result.current.user).toBeNull();
-    expect(result.current.isAuthenticated).toBe(false);
-    expect(consoleErrorSpy).toHaveBeenCalled();
-    consoleErrorSpy.mockRestore();
   });
 });

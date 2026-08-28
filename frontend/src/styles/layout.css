@@ -372,15 +372,6 @@
   .auth-card {
     padding: 20px;
   }
-
-  .rich-text-header-picker {
-    position: static;
-    margin: 0 0 8px;
-  }
-
-  .rich-text-editor .ql-toolbar {
-    padding-left: 8px;
-  }
 }
 
 @media (max-width: 850px) {
@@ -595,4 +586,15 @@
 
 .rich-text-editor .ql-toolbar {
   padding-left: 140px;
+}
+
+@media (max-width: 480px) {
+  .rich-text-header-picker {
+    position: static;
+    margin: 0 0 8px;
+  }
+
+  .rich-text-editor .ql-toolbar {
+    padding-left: 8px;
+  }
 }

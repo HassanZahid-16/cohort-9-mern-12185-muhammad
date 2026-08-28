@@ -230,4 +230,27 @@ describe("HomePage", () => {
     expect(screen.getByText("React notes")).toBeInTheDocument();
     expect(screen.getByText("Database notes")).toBeInTheDocument();
   });
+
+  it("filters notes by multiline rich text content", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "React notes",
+        content: "<p>React</p><p>hooks</p>",
+      },
+      {
+        id: "note-2",
+        title: "Backend notes",
+        content: "<p>Node</p><p>Express</p>",
+      },
+    ]);
+    renderHomePage();
+    expect(await screen.findByText("React notes")).toBeInTheDocument();
+    expect(screen.getByText("Backend notes")).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("searchbox"), {
+      target: { value: "react hooks" },
+    });
+    expect(screen.getByText("React notes")).toBeInTheDocument();
+    expect(screen.queryByText("Backend notes")).not.toBeInTheDocument();
+  });
 });

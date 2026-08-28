@@ -59,9 +59,25 @@ function HomePage() {
     if (!normalizedSearchTerm) {
       return true;
     }
-    const noteContent = new DOMParser()
-      .parseFromString(note.content || "", "text/html")
-      .body.textContent.toLowerCase();
+    const noteDocument = new DOMParser().parseFromString(
+      note.content || "",
+      "text/html"
+    );
+    noteDocument.body.querySelectorAll("br").forEach((element) => {
+      element.replaceWith(" ");
+    });
+    noteDocument.body
+      .querySelectorAll(
+        "p, div, li, h1, h2, h3, h4, h5, h6, blockquote, pre"
+      )
+      .forEach((element) => {
+        element.insertAdjacentText("beforebegin", " ");
+        element.insertAdjacentText("afterend", " ");
+      });
+    const noteContent = noteDocument.body.textContent
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
     return (
       note.title.toLowerCase().includes(normalizedSearchTerm) ||
       noteContent.includes(normalizedSearchTerm)
