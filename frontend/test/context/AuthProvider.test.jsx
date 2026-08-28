@@ -41,7 +41,6 @@ describe("AuthProvider", () => {
 
     expect(result.current.user).toBeNull();
     expect(result.current.isAuthenticated).toBe(false);
-    expect(result.current.authError).toBeNull();
   });
 
   it("stores the logged-in user in the authentication state", async () => {
@@ -74,8 +73,6 @@ describe("AuthProvider", () => {
     }
     expect(result.current.user).toEqual(user);
     expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.authError).toBeNull();
-    expect(JSON.parse(localStorage.getItem("notes_app_user"))).toEqual(user);
   });
 
   it("clears the user after a successful logout", async () => {
@@ -117,5 +114,30 @@ describe("AuthProvider", () => {
     expect(logoutUser).toHaveBeenCalledTimes(1);
     expect(result.current.user).toBeNull();
     expect(result.current.isAuthenticated).toBe(false);
+  });
+
+  it("keeps the user unauthenticated when session validation fails", async () => {
+    const consoleErrorSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    getCurrentUser.mockRejectedValue(
+      new Error("Unable to validate the session.")
+    );
+    const { result } = renderHook(() => useAuth(), {
+      wrapper,
+    });
+    try {
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+    } catch (error) {
+      throw new Error("Failed while waiting for authentication state.", {
+        cause: error,
+      });
+    }
+    expect(result.current.user).toBeNull();
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(consoleErrorSpy).toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 });

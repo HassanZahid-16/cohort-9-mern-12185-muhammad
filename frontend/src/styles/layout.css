@@ -177,6 +177,45 @@
   margin-bottom: 32px;
 }
 
+.notes-search {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.notes-search label {
+  font-weight: 600;
+}
+
+.notes-search-field {
+  position: relative;
+  width: 100%;
+}
+
+.notes-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  color: #667085;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.notes-search input {
+  width: 100%;
+  padding: 11px 12px 11px 40px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+}
+
+.notes-search input:focus {
+  outline: 2px solid #94a3b8;
+  outline-offset: 1px;
+}
+
 .add-note-button {
   position: fixed;
   right: 32px;
@@ -316,6 +355,32 @@
 .page-error {
   margin-bottom: 20px;
   color: #b42318;
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    padding: 14px 16px;
+  }
+
+  .user-greeting {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .auth-card {
+    padding: 20px;
+  }
+
+  .rich-text-header-picker {
+    position: static;
+    margin: 0 0 8px;
+  }
+
+  .rich-text-editor .ql-toolbar {
+    padding-left: 8px;
+  }
 }
 
 @media (max-width: 850px) {

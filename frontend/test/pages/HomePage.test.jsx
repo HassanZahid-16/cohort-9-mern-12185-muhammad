@@ -139,4 +139,95 @@ describe("HomePage", () => {
       });
     }
   });
+
+  it("filters notes by title", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "React notes",
+        content: "<p>Frontend development</p>",
+      },
+      {
+        id: "note-2",
+        title: "Database notes",
+        content: "<p>MongoDB queries</p>",
+      },
+    ]);
+    renderHomePage();
+    expect(await screen.findByText("React notes")).toBeInTheDocument();
+    expect(screen.getByText("Database notes")).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("searchbox"), {
+      target: { value: "react" },
+    });
+    expect(screen.getByText("React notes")).toBeInTheDocument();
+    expect(screen.queryByText("Database notes")).not.toBeInTheDocument();
+  });
+
+  it("filters notes by rich text content", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "Frontend notes",
+        content: "<p>Learning React hooks</p>",
+      },
+      {
+        id: "note-2",
+        title: "Backend notes",
+        content: "<p>Working with MongoDB</p>",
+      },
+    ]);
+    renderHomePage();
+    expect(await screen.findByText("Frontend notes")).toBeInTheDocument();
+    expect(screen.getByText("Backend notes")).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("searchbox"), {
+      target: { value: "hooks" },
+    });
+    expect(screen.getByText("Frontend notes")).toBeInTheDocument();
+    expect(screen.queryByText("Backend notes")).not.toBeInTheDocument();
+  });
+
+  it("shows no notes found when the search has no matches", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "React notes",
+        content: "<p>Frontend development</p>",
+      },
+    ]);
+    renderHomePage();
+    expect(await screen.findByText("React notes")).toBeInTheDocument();
+    fireEvent.change(screen.getByRole("searchbox"), {
+      target: { value: "python" },
+    });
+    expect(screen.getByText("No notes found.")).toBeInTheDocument();
+    expect(screen.queryByText("React notes")).not.toBeInTheDocument();
+  });
+
+  it("shows all notes again when the search is cleared", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "React notes",
+        content: "<p>Frontend development</p>",
+      },
+      {
+        id: "note-2",
+        title: "Database notes",
+        content: "<p>MongoDB queries</p>",
+      },
+    ]);
+    renderHomePage();
+    expect(await screen.findByText("React notes")).toBeInTheDocument();
+    expect(screen.getByText("Database notes")).toBeInTheDocument();
+    const searchInput = screen.getByRole("searchbox");
+    fireEvent.change(searchInput, {
+      target: { value: "react" },
+    });
+    expect(screen.queryByText("Database notes")).not.toBeInTheDocument();
+    fireEvent.change(searchInput, {
+      target: { value: "" },
+    });
+    expect(screen.getByText("React notes")).toBeInTheDocument();
+    expect(screen.getByText("Database notes")).toBeInTheDocument();
+  });
 });

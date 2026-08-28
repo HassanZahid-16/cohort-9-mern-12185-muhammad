@@ -2,12 +2,9 @@ import { useEffect, useState } from "react";
 import AuthContext from "./AuthContext";
 import {getCurrentUser,logoutUser,} from "../services/authService";
 
-const USER_KEY = "notes_app_user";
-
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -21,14 +18,10 @@ function AuthProvider({ children }) {
         if (validatedUser) {
           setUser(validatedUser);
         } else {
-          localStorage.removeItem(USER_KEY);
           setUser(null);
         }
-        setAuthError(null);
       } catch (error) {
-        if (isMounted) {
-          setAuthError(error.message);
-        }
+        console.error("Failed to restore authentication session:", error);
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -42,35 +35,19 @@ function AuthProvider({ children }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-    } else if (!isLoading) {
-      localStorage.removeItem(USER_KEY);
-    }
-  }, [user, isLoading]);
-
   const login = (authData) => {
     setUser(authData.user);
-    setAuthError(null);
   };
 
   const logout = async () => {
-    try {
-      await logoutUser();
-      setUser(null);
-      setAuthError(null);
-    } catch (error) {
-      setAuthError(error.message);
-      throw error;
-    }
+    await logoutUser();
+    setUser(null);
   };
 
   const value = {
     user,
     isAuthenticated: Boolean(user),
     isLoading,
-    authError,
     login,
     logout,
   };

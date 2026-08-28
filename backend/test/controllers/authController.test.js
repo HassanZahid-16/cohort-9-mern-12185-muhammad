@@ -21,6 +21,7 @@ describe("Auth Controller", () => {
     res = {
       status: sandbox.stub().returnsThis(),
       json: sandbox.stub().returnsThis(),
+      cookie: sandbox.stub().returnsThis(),
     };
     next = sandbox.stub();
   });
@@ -110,8 +111,20 @@ describe("Auth Controller", () => {
       expect(
         res.json.calledOnceWith({
           message: "Login successful.",
-          ...result,
+          user: result.user,
         })
+      ).to.equal(true);
+      expect(res.cookie.calledTwice).to.equal(true);
+      expect(
+        res.cookie.firstCall.calledWith(
+          "notes_app_token",
+          result.token
+        )
+      ).to.equal(true);
+      expect(
+        res.cookie.secondCall.calledWith(
+          "notes_app_csrf"
+        )
       ).to.equal(true);
       expect(next.notCalled).to.equal(true);
     });
