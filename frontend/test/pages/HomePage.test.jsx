@@ -139,4 +139,148 @@ describe("HomePage", () => {
       });
     }
   });
+
+  it("filters notes by title", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "React notes",
+        content: "<p>Frontend development</p>",
+      },
+      {
+        id: "note-2",
+        title: "Database notes",
+        content: "<p>MongoDB queries</p>",
+      },
+    ]);
+    renderHomePage();
+    try {
+      expect(await screen.findByText("React notes")).toBeInTheDocument();
+      expect(screen.getByText("Database notes")).toBeInTheDocument();
+      fireEvent.change(screen.getByRole("searchbox"), {
+        target: { value: "react" },
+      });
+      expect(screen.getByText("React notes")).toBeInTheDocument();
+      expect(screen.queryByText("Database notes")).not.toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during note title search flow.", {
+        cause: error,
+      });
+    }
+  });
+
+  it("filters notes by rich text content", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "Frontend notes",
+        content: "<p>Learning React hooks</p>",
+      },
+      {
+        id: "note-2",
+        title: "Backend notes",
+        content: "<p>Working with MongoDB</p>",
+      },
+    ]);
+    renderHomePage();
+    try {
+      expect(await screen.findByText("Frontend notes")).toBeInTheDocument();
+      expect(screen.getByText("Backend notes")).toBeInTheDocument();
+      fireEvent.change(screen.getByRole("searchbox"), {
+        target: { value: "hooks" },
+      });
+      expect(screen.getByText("Frontend notes")).toBeInTheDocument();
+      expect(screen.queryByText("Backend notes")).not.toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during rich text search flow.", {
+        cause: error,
+      });
+    }
+  });
+
+  it("shows no notes found when the search has no matches", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "React notes",
+        content: "<p>Frontend development</p>",
+      },
+    ]);
+    renderHomePage();
+    try {
+      expect(await screen.findByText("React notes")).toBeInTheDocument();
+      fireEvent.change(screen.getByRole("searchbox"), {
+        target: { value: "python" },
+      });
+      expect(screen.getByText("No notes found.")).toBeInTheDocument();
+      expect(screen.queryByText("React notes")).not.toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during no-search-match flow.", {
+        cause: error,
+      });
+    }
+  });
+
+  it("shows all notes again when the search is cleared", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "React notes",
+        content: "<p>Frontend development</p>",
+      },
+      {
+        id: "note-2",
+        title: "Database notes",
+        content: "<p>MongoDB queries</p>",
+      },
+    ]);
+    renderHomePage();
+    try {
+      expect(await screen.findByText("React notes")).toBeInTheDocument();
+      expect(screen.getByText("Database notes")).toBeInTheDocument();
+      const searchInput = screen.getByRole("searchbox");
+      fireEvent.change(searchInput, {
+        target: { value: "react" },
+      });
+      expect(screen.queryByText("Database notes")).not.toBeInTheDocument();
+      fireEvent.change(searchInput, {
+        target: { value: "" },
+      });
+      expect(screen.getByText("React notes")).toBeInTheDocument();
+      expect(screen.getByText("Database notes")).toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during cleared search flow.", {
+        cause: error,
+      });
+    }
+  });
+
+  it("filters notes by multiline rich text content", async () => {
+    getNotes.mockResolvedValueOnce([
+      {
+        id: "note-1",
+        title: "React notes",
+        content: "<p>React</p><p>hooks</p>",
+      },
+      {
+        id: "note-2",
+        title: "Backend notes",
+        content: "<p>Node</p><p>Express</p>",
+      },
+    ]);
+    renderHomePage();
+    try {
+      expect(await screen.findByText("React notes")).toBeInTheDocument();
+      expect(screen.getByText("Backend notes")).toBeInTheDocument();
+      fireEvent.change(screen.getByRole("searchbox"), {
+        target: { value: "react hooks" },
+      });
+      expect(screen.getByText("React notes")).toBeInTheDocument();
+      expect(screen.queryByText("Backend notes")).not.toBeInTheDocument();
+    } catch (error) {
+      throw new Error("Failed during multiline rich text search flow.", {
+        cause: error,
+      });
+    }
+  });
 });
