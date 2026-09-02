@@ -71,6 +71,15 @@ function NoteEditorPage() {
     return <p className="notes-status">Loading your note...</p>;
   }
 
+  let submitButtonLabel;
+  if (isSaving) {
+    submitButtonLabel = "Saving...";
+  } else if (isEditing) {
+    submitButtonLabel = "Edit note";
+  } else {
+    submitButtonLabel = "Save note";
+  }
+
   return (
     <section className="note-editor-page">
       <div className="note-editor-heading">
@@ -90,7 +99,7 @@ function NoteEditorPage() {
 
       <form className="note-editor-form" onSubmit={handleSubmit}>
         <label>
-          Title
+          <span>Title</span>
           <input
             type="text"
             value={title}
@@ -110,7 +119,7 @@ function NoteEditorPage() {
           </Link>
 
           <button type="submit" className="primary-action" disabled={isSaving}>
-            {isSaving ? "Saving..." : isEditing ? "Edit note" : "Save note"}
+            {submitButtonLabel}
           </button>
         </div>
       </form>

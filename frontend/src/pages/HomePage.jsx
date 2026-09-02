@@ -71,8 +71,8 @@ function HomePage() {
         "p, div, li, h1, h2, h3, h4, h5, h6, blockquote, pre"
       )
       .forEach((element) => {
-        element.insertAdjacentText("beforebegin", " ");
-        element.insertAdjacentText("afterend", " ");
+        element.before(" ");
+        element.after(" ");
       });
     const noteContent = noteDocument.body.textContent
       .replace(/\s+/g, " ")
@@ -83,6 +83,15 @@ function HomePage() {
       noteContent.includes(normalizedSearchTerm)
     );
   });
+
+  let notesContent;
+  if (isLoading) {
+    notesContent = <p className="notes-status">Loading your notes...</p>;
+  } else if (normalizedSearchTerm && filteredNotes.length === 0) {
+    notesContent = <p className="notes-status">No notes found.</p>;
+  } else {
+    notesContent = <NotesList notes={filteredNotes} onDelete={handleDelete} />;
+  }
 
   return (
     <section className="notes-page">
@@ -122,14 +131,7 @@ function HomePage() {
           </div>
         </div>
       )}
-
-      {isLoading ? (
-        <p className="notes-status">Loading your notes...</p>
-      ) : normalizedSearchTerm && filteredNotes.length === 0 ? (
-        <p className="notes-status">No notes found.</p>
-      ) : (
-        <NotesList notes={filteredNotes} onDelete={handleDelete} />
-      )}
+      {notesContent}
     </section>
   );
 }

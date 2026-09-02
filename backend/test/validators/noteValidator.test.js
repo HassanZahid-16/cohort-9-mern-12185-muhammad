@@ -10,7 +10,7 @@ describe("Note Validator", () => {
       title: "Shopping List",
       content: "Milk, Eggs, Bread",
     });
-    expect(result).to.equal(null);
+    expect(result).to.be.null;
   });
 
   it("should reject an empty title", () => {
@@ -54,7 +54,7 @@ describe("Note Validator", () => {
     title: "   Shopping   ",
     content: "   Buy milk   ",
   });
-  expect(validResult).to.equal(null);
+  expect(validResult).to.be.null;
   const whitespaceTitleResult = validateNote({
     title: "      ",
     content: "Sample content",
@@ -66,6 +66,6 @@ describe("Note Validator", () => {
     title: `${" ".repeat(5)}${"A".repeat(120)}${" ".repeat(5)}`,
     content: "Sample content",
   });
-  expect(boundaryTitleResult).to.equal(null);
+  expect(boundaryTitleResult).to.be.null;
 });
 });

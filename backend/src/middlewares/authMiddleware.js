@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const logger = require("../config/logger");
 
 const authenticate = (req, res, next) => {
   const token = req.cookies.notes_app_token;
@@ -14,6 +15,7 @@ const authenticate = (req, res, next) => {
     };
     next();
   } catch (error) {
+    logger.error({ err: error }, "Authentication token verification failed");
     return res.status(401).json({
       message: "Authentication token is invalid or expired.",
     });

@@ -13,7 +13,7 @@ describe("Auth Validator", () => {
         email: "hassan@example.com",
         password: "password123",
       });
-      expect(result).to.equal(null);
+      expect(result).to.be.null;
     });
 
     it("should reject missing request data", () => {
@@ -72,7 +72,7 @@ describe("Auth Validator", () => {
         email: "hassan@example.com",
         password: "password123",
       });
-      expect(result).to.equal(null);
+      expect(result).to.be.null;
     });
 
     it("should reject missing request data", () => {
