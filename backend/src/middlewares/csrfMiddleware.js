@@ -29,4 +29,4 @@ const csrfMiddleware = (req, res, next) => {
   next();
 };
 
-module.exports = {csrfMiddleware,CSRF_COOKIE_NAME,};
+module.exports = {csrfMiddleware,CSRF_COOKIE_NAME,CSRF_HEADER_NAME,};

@@ -19,25 +19,19 @@ describe("authService", () => {
         ok: true,
         json: async () => responseData,
       });
-      try {
-        await expect(
-          loginUser({
-            email: "hassan@example.com",
-            password: "password123",
-          })
-        ).resolves.toEqual(responseData);
-        expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining("/login"),
-          expect.objectContaining({
-            method: "POST",
-            credentials: "include",
-          })
-        );
-      } catch (error) {
-        throw new Error("Failed during successful login flow.", {
-          cause: error,
-        });
-      }
+      await expect(
+        loginUser({
+          email: "hassan@example.com",
+          password: "password123",
+        })
+      ).resolves.toEqual(responseData);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/login"),
+        expect.objectContaining({
+          method: "POST",
+          credentials: "include",
+        })
+      );
     });
 
     it("uses the backend message when login is rejected", async () => {
@@ -47,38 +41,26 @@ describe("authService", () => {
           message: "Invalid email or password.",
         }),
       });
-      try {
-        await expect(
-          loginUser({
-            email: "hassan@example.com",
-            password: "wrong-password",
-          })
-        ).rejects.toThrow("Invalid email or password.");
-      } catch (error) {
-        throw new Error("Failed during rejected login flow.", {
-          cause: error,
-        });
-      }
+      await expect(
+        loginUser({
+          email: "hassan@example.com",
+          password: "wrong-password",
+        })
+      ).rejects.toThrow("Invalid email or password.");
     });
 
     it("throws a connection error when the backend cannot be reached", async () => {
       jest.spyOn(global, "fetch").mockRejectedValue(
         new TypeError("Failed to fetch")
       );
-      try {
-        await expect(
-          loginUser({
-            email: "hassan@example.com",
-            password: "password123",
-          })
-        ).rejects.toThrow(
-          "Unable to reach the server. Make sure the backend is running."
-        );
-      } catch (error) {
-        throw new Error("Failed during unreachable backend login flow.", {
-          cause: error,
-        });
-      }
+      await expect(
+        loginUser({
+          email: "hassan@example.com",
+          password: "password123",
+        })
+      ).rejects.toThrow(
+        "Unable to reach the server. Make sure the backend is running."
+      );
     });
   });
 
@@ -90,24 +72,18 @@ describe("authService", () => {
           message: "User registered successfully.",
         }),
       });
-      try {
-        await registerUser({
-          fullName: "Muhammad Hassan",
-          email: "hassan@example.com",
-          password: "password123",
-        });
-        expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining("/register"),
-          expect.objectContaining({
-            method: "POST",
-            credentials: "include",
-          })
-        );
-      } catch (error) {
-        throw new Error("Failed during user registration flow.", {
-          cause: error,
-        });
-      }
+      await registerUser({
+        fullName: "Muhammad Hassan",
+        email: "hassan@example.com",
+        password: "password123",
+      });
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/register"),
+        expect.objectContaining({
+          method: "POST",
+          credentials: "include",
+        })
+      );
     });
 
     it("uses the backend message when registration is rejected", async () => {
@@ -117,19 +93,13 @@ describe("authService", () => {
           message: "Email is already registered.",
         }),
       });
-      try {
-        await expect(
-          registerUser({
-            fullName: "Muhammad Hassan",
-            email: "hassan@example.com",
-            password: "password123",
-          })
-        ).rejects.toThrow("Email is already registered.");
-      } catch (error) {
-        throw new Error("Failed during rejected registration flow.", {
-          cause: error,
-        });
-      }
+      await expect(
+        registerUser({
+          fullName: "Muhammad Hassan",
+          email: "hassan@example.com",
+          password: "password123",
+        })
+      ).rejects.toThrow("Email is already registered.");
     });
   });
 
@@ -140,13 +110,7 @@ describe("authService", () => {
         ok: false,
         json: async () => ({}),
       });
-      try {
-        await expect(getCurrentUser()).resolves.toBeNull();
-      } catch (error) {
-        throw new Error("Failed during unauthenticated session check.", {
-          cause: error,
-        });
-      }
+      await expect(getCurrentUser()).resolves.toBeNull();
     });
 
     it("returns the current user when the session is valid", async () => {
@@ -160,13 +124,7 @@ describe("authService", () => {
         ok: true,
         json: async () => ({ user }),
       });
-      try {
-        await expect(getCurrentUser()).resolves.toEqual(user);
-      } catch (error) {
-        throw new Error("Failed during authenticated session check.", {
-          cause: error,
-        });
-      }
+      await expect(getCurrentUser()).resolves.toEqual(user);
     });
 
     it("throws a validation error when the session check returns a non-ok response", async () => {
@@ -177,30 +135,18 @@ describe("authService", () => {
           message: "Session lookup failed.",
         }),
       });
-      try {
-        await expect(getCurrentUser()).rejects.toThrow(
-          "Unable to validate the session."
-        );
-      } catch (error) {
-        throw new Error("Failed during broken session check flow.", {
-          cause: error,
-        });
-      }
+      await expect(getCurrentUser()).rejects.toThrow(
+        "Unable to validate the session."
+      );
     });
 
     it("throws a validation error when the session check fails unexpectedly", async () => {
       jest.spyOn(global, "fetch").mockRejectedValue(
         new Error("Network down")
       );
-      try {
-        await expect(getCurrentUser()).rejects.toThrow(
-          "Unable to validate the session."
-        );
-      } catch (error) {
-        throw new Error("Failed during unexpected session check flow.", {
-          cause: error,
-        });
-      }
+      await expect(getCurrentUser()).rejects.toThrow(
+        "Unable to validate the session."
+      );
     });
   });
 
@@ -213,25 +159,19 @@ describe("authService", () => {
           message: "Logout successful.",
         }),
       });
-      try {
-        await expect(logoutUser()).resolves.toEqual({
-          message: "Logout successful.",
-        });
-        expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining("/logout"),
-          expect.objectContaining({
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "X-CSRF-Token": "test-csrf-token",
-            },
-          })
-        );
-      } catch (error) {
-        throw new Error("Failed during logout flow.", {
-          cause: error,
-        });
-      }
+      await expect(logoutUser()).resolves.toEqual({
+        message: "Logout successful.",
+      });
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/logout"),
+        expect.objectContaining({
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "X-CSRF-Token": "test-csrf-token",
+          },
+        })
+      );
     });
 
     it("sends an empty csrf header when there is no csrf cookie", async () => {
@@ -243,21 +183,15 @@ describe("authService", () => {
           message: "Logout successful.",
         }),
       });
-      try {
-        await logoutUser();
-        expect(fetch).toHaveBeenCalledWith(
-          expect.stringContaining("/logout"),
-          expect.objectContaining({
-            headers: {
-              "X-CSRF-Token": "",
-            },
-          })
-        );
-      } catch (error) {
-        throw new Error("Failed during missing csrf cookie flow.", {
-          cause: error,
-        });
-      }
+      await logoutUser();
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/logout"),
+        expect.objectContaining({
+          headers: {
+            "X-CSRF-Token": "",
+          },
+        })
+      );
     });
 
     it("throws a helpful message when logout is rejected by the backend", async () => {
@@ -267,30 +201,18 @@ describe("authService", () => {
           message: "Session already expired.",
         }),
       });
-      try {
-        await expect(logoutUser()).rejects.toThrow(
-          "Unable to log out. Please try again."
-        );
-      } catch (error) {
-        throw new Error("Failed during rejected logout flow.", {
-          cause: error,
-        });
-      }
+      await expect(logoutUser()).rejects.toThrow(
+        "Unable to log out. Please try again."
+      );
     });
 
     it("throws a helpful message when logout fails unexpectedly", async () => {
       jest.spyOn(global, "fetch").mockRejectedValue(
         new TypeError("Failed to fetch")
       );
-      try {
-        await expect(logoutUser()).rejects.toThrow(
-          "Unable to log out. Please try again."
-        );
-      } catch (error) {
-        throw new Error("Failed during unreachable backend logout flow.", {
-          cause: error,
-        });
-      }
+      await expect(logoutUser()).rejects.toThrow(
+        "Unable to log out. Please try again."
+      );
     });
   });
 });

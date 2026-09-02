@@ -4,6 +4,7 @@ const sinon = require("sinon");
 const {
   csrfMiddleware,
   CSRF_COOKIE_NAME,
+  CSRF_HEADER_NAME,
 } = require("../../src/middlewares/csrfMiddleware");
 
 describe("Csrf Middleware", () => {
@@ -42,7 +43,7 @@ describe("Csrf Middleware", () => {
 
   it("should reject a request with no csrf header", () => {
     req.cookies[CSRF_COOKIE_NAME] = "cookie-token";
-    req.get.returns(undefined);
+    req.get.withArgs(CSRF_HEADER_NAME).returns(undefined);
     csrfMiddleware(req, res, next);
     expect(res.status.calledOnceWith(403)).to.equal(true);
     expect(
@@ -55,7 +56,7 @@ describe("Csrf Middleware", () => {
 
   it("should reject a request when the tokens are different lengths", () => {
     req.cookies[CSRF_COOKIE_NAME] = "short-token";
-    req.get.returns("a-much-longer-token-value");
+    req.get.withArgs(CSRF_HEADER_NAME).returns("a-much-longer-token-value");
     csrfMiddleware(req, res, next);
     expect(res.status.calledOnceWith(403)).to.equal(true);
     expect(
@@ -68,7 +69,7 @@ describe("Csrf Middleware", () => {
 
   it("should reject a request when the tokens are the same length but do not match", () => {
     req.cookies[CSRF_COOKIE_NAME] = "aaaaaaaaaaaaaaaa";
-    req.get.returns("bbbbbbbbbbbbbbbb");
+    req.get.withArgs(CSRF_HEADER_NAME).returns("bbbbbbbbbbbbbbbb");
     csrfMiddleware(req, res, next);
     expect(res.status.calledOnceWith(403)).to.equal(true);
     expect(
@@ -81,7 +82,7 @@ describe("Csrf Middleware", () => {
 
   it("should call next when the tokens match", () => {
     req.cookies[CSRF_COOKIE_NAME] = "matching-token-value";
-    req.get.returns("matching-token-value");
+    req.get.withArgs(CSRF_HEADER_NAME).returns("matching-token-value");
     csrfMiddleware(req, res, next);
     expect(next.calledOnce).to.equal(true);
     expect(res.status.notCalled).to.equal(true);

@@ -17,4 +17,5 @@ module.exports = {
   moduleNameMapper: {
     "\\.(css)$": "<rootDir>/test/styleMock.cjs",
   },
+  collectCoverage: true,
 };

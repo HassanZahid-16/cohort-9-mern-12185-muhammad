@@ -56,29 +56,39 @@ const getUserNotes = async (owner) => {
 };
 
 const getNoteById = async ({ noteId, owner }) => {
-  if (!mongoose.Types.ObjectId.isValid(noteId)) {
-    throw new AppError(
-      "Invalid note id.",
-      400
-    );
+  try {
+    if (!mongoose.Types.ObjectId.isValid(noteId)) {
+      throw new AppError(
+        "Invalid note id.",
+        400
+      );
+    }
+    const note = await Note.findOne({
+      _id: noteId,
+      owner,
+    }).lean();
+    if (!note) {
+      throw new AppError(
+        "Note not found.",
+        404
+      );
+    }
+    return {
+      id: note._id,
+      title: note.title,
+      content: note.content,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    };
+  } catch (error) {
+    if (error.name === "CastError") {
+      throw new AppError(
+        "Invalid user information.",
+        400
+      );
+    }
+    throw error;
   }
-  const note = await Note.findOne({
-    _id: noteId,
-    owner,
-  }).lean();
-  if (!note) {
-    throw new AppError(
-      "Note not found.",
-      404
-    );
-  }
-  return {
-    id: note._id,
-    title: note.title,
-    content: note.content,
-    createdAt: note.createdAt,
-    updatedAt: note.updatedAt,
-  };
 };
 
 const updateNote = async ({ noteId, owner, title, content, }) => {
@@ -121,26 +131,36 @@ const updateNote = async ({ noteId, owner, title, content, }) => {
 };
 
 const deleteNote = async ({ noteId, owner, }) => {
-  if (!mongoose.Types.ObjectId.isValid(noteId)) {
-    throw new AppError(
-      "Invalid note id.",
-      400
-    );
+  try {
+    if (!mongoose.Types.ObjectId.isValid(noteId)) {
+      throw new AppError(
+        "Invalid note id.",
+        400
+      );
+    }
+    const note = await Note.findOne({
+      _id: noteId,
+      owner,
+    });
+    if (!note) {
+      throw new AppError(
+        "Note not found.",
+        404
+      );
+    }
+    await note.deleteOne();
+    return {
+      message: "Note deleted successfully.",
+    };
+  } catch (error) {
+    if (error.name === "CastError") {
+      throw new AppError(
+        "Invalid user information.",
+        400
+      );
+    }
+    throw error;
   }
-  const note = await Note.findOne({
-    _id: noteId,
-    owner,
-  });
-  if (!note) {
-    throw new AppError(
-      "Note not found.",
-      404
-    );
-  }
-  await note.deleteOne();
-  return {
-    message: "Note deleted successfully.",
-  };
 };
 
-module.exports = {createNote, getUserNotes, getNoteById, updateNote, deleteNote,};
+module.exports = {createNote,getUserNotes,getNoteById,updateNote,deleteNote,};
