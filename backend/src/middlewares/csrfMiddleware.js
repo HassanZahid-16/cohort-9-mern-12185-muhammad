@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 
 const CSRF_COOKIE_NAME = "notes_app_csrf";
 const CSRF_HEADER_NAME = "x-csrf-token";
@@ -29,4 +29,4 @@ const csrfMiddleware = (req, res, next) => {
   next();
 };
 
-module.exports = {csrfMiddleware,CSRF_COOKIE_NAME,};
+module.exports = {csrfMiddleware,CSRF_COOKIE_NAME,CSRF_HEADER_NAME,};

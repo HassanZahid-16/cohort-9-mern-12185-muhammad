@@ -81,6 +81,12 @@ const getNoteById = async ({ noteId, owner }) => {
       updatedAt: note.updatedAt,
     };
   } catch (error) {
+    if (error.name === "CastError") {
+      throw new AppError(
+        "Invalid user information.",
+        400
+      );
+    }
     throw error;
   }
 };
@@ -147,8 +153,14 @@ const deleteNote = async ({ noteId, owner, }) => {
       message: "Note deleted successfully.",
     };
   } catch (error) {
+    if (error.name === "CastError") {
+      throw new AppError(
+        "Invalid user information.",
+        400
+      );
+    }
     throw error;
   }
 };
 
-module.exports = {createNote, getUserNotes, getNoteById, updateNote, deleteNote,};
+module.exports = {createNote,getUserNotes,getNoteById,updateNote,deleteNote,};

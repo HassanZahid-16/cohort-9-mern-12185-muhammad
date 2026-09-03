@@ -7,6 +7,7 @@ const requestLogger = require("./middlewares/requestLogger");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
+app.disable("x-powered-by");
 
 app.use(
   cors({

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AuthContext from "./AuthContext";
 import {getCurrentUser,logoutUser,} from "../services/authService";
 
@@ -44,13 +44,16 @@ function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const value = {
-    user,
-    isAuthenticated: Boolean(user),
-    isLoading,
-    login,
-    logout,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      isAuthenticated: Boolean(user),
+      isLoading,
+      login,
+      logout,
+    }),
+    [user, isLoading]
+  );
 
   return (
     <AuthContext.Provider value={value}>
